@@ -1,0 +1,26 @@
+body {
+  font-family: Georgia, serif;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 auto;
+}
+
+.quoted {
+  background: lightskyblue;
+}
+
+@media (min-width: 375px) and (max-width: 559px) {
+  ul {
+    width: 344px;
+  }
+}
+
+@media (min-width: 560px) {
+  ul {
+    font-size: 24px;
+    width: 528px;
+  }
+}
