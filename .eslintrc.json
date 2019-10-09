@@ -1,0 +1,41 @@
+{
+  "extends": "eslint:recommended",
+  "plugins": ["prettier"],
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "no-extra-boolean-cast": "error",
+    "no-regex-spaces": "error",
+    "no-unsafe-negation": "error",
+    "curly": ["error", "multi"],
+    "eqeqeq": "error",
+    "no-div-regex": "error",
+    "no-else-return": "error",
+    "no-extra-bind": "error",
+    "no-extra-label": "error",
+    "no-floating-decimal": "error",
+    "no-implicit-coercion": "error",
+    "no-unused-labels": "error",
+    "no-useless-return": "error",
+    "wrap-iife": "error",
+    "yoda": "error",
+    "no-undef-init": "error",
+    "no-unneeded-ternary": "error",
+    "operator-assignment": "error",
+    "prefer-object-spread": "error",
+    "no-confusing-arrow": "error",
+    "no-useless-computed-key": "error",
+    "no-useless-rename": "error",
+    "no-var": "error",
+    "object-shorthand": "error",
+    "prefer-arrow-callback": "error",
+    "prefer-const": "error",
+    "prefer-destructuring": "error",
+    "prefer-numeric-literals": "error",
+    "prefer-template": "error"
+  }
+}
