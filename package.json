@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "parcel index.html",
     "build": "parcel build index.html",
-    "postbuild": "cd functions/fauna && npm install"
+    "postbuild": "cd functions/fauna && npm install && cd - && cd functions/twitter && npm install"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4"
