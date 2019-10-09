@@ -4,7 +4,9 @@ document.getElementById('root').insertAdjacentHTML('beforeend', '<span>hello, wo
 
 async function f() {
   let response = await fetch(`/.netlify/functions/fauna`)
-  console.log(await response.json());
+  let message = await response.json()
+  console.log(message);
+  document.getElementById('root').insertAdjacentHTML('beforeend', '<span>' + message.id_str + '</span>')
 }
 
 f()
