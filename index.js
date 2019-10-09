@@ -1,12 +1,7 @@
-console.log('hello world')
-
-document.getElementById('root').insertAdjacentHTML('beforeend', '<span>hello, world</span>')
-
-async function f() {
-  let response = await fetch(`/.netlify/functions/fauna`)
-  let message = await response.json()
-  console.log(message);
-  document.getElementById('root').insertAdjacentHTML('beforeend', '<span>' + message.id_str + '</span>')
-}
-
-f()
+(async function () {
+  const faunaResp = await fetch(`/.netlify/functions/fauna`)
+  const faunaJson = await faunaResp.json()
+  const tweetResp = await fetch(`/.netlify/functions/twitter?since_id=${faunaJson.id_str}`)
+  const tweetJson = await tweetResp.json()
+  tweetJson.forEach(tweet => document.getElementById('root').insertAdjacentHTML('beforeend', `<div>${tweet.full_text}</div>`))
+})()
