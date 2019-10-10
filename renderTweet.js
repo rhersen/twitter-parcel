@@ -6,7 +6,7 @@ export default function renderTweet(tweet) {
   const user = getUser(retweet, tweet)
   const image = getImages(retweet || tweet)
 
-  const a = `<a href='/mark?id=${tweet.id_str}'>${time}</a>`
+  const a = `<a onclick='mark("${tweet.id_str}")'>${time}</a>`
   const i = getRetweeter(retweet, tweet)
   const b = `<b onclick='const data = ${data};console.log(data)'>${user}</b>`
   const text = getText(retweet, tweet)

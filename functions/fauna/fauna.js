@@ -26,15 +26,28 @@ async function mark(ref, id_str) {
   }
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async function({ httpMethod, body }) {
+  console.log(httpMethod, body)
   try {
-    const response = await lastRead()
-    console.log(response)
-    if (!response.data) return { statusCode: response.requestResult.statusCode }
+    if (httpMethod === "GET") {
+      const response = await lastRead()
+      console.log(response)
+      if (!response.data)
+        return { statusCode: response.requestResult.statusCode }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response.data)
+      return {
+        statusCode: 200,
+        body: JSON.stringify(response.data)
+      }
+    }
+
+    if (httpMethod === "PUT") {
+      const db = await lastRead()
+      await mark(db.ref, body)
+      return {
+        statusCode: 200,
+        body: "ok"
+      }
     }
   } catch (err) {
     console.log(err) // output to netlify function log
