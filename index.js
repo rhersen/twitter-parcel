@@ -1,3 +1,5 @@
+import renderTweet from "./renderTweet"
+
 iife().then(() => {
   console.log("done")
 })
@@ -8,9 +10,8 @@ async function iife() {
     `/.netlify/functions/twitter?since_id=${(await faunaResp.json()).id_str}`
   )
 
+  const tweets = document.getElementById("tweets")
   ;(await tweetResp.json()).forEach(tweet =>
-    document
-      .getElementById("root")
-      .insertAdjacentHTML("beforeend", `<hr /><div>${tweet.full_text}</div>`)
+    tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
   )
 }
