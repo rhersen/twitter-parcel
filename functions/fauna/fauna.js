@@ -7,23 +7,11 @@ const faunaClient = new faunadb.Client({
 })
 
 async function lastRead() {
-  try {
-    const ret = await faunaClient.query(
-      q.Get(q.Match(q.Index("all_last_read")))
-    )
-    console.log(ret)
-    return ret
-  } catch (e) {
-    console.error(e)
-  }
+  return await faunaClient.query(q.Get(q.Match(q.Index("all_last_read"))))
 }
 
 async function mark(ref, id_str) {
-  try {
-    await faunaClient.query(q.Replace(ref, { data: { id_str } }))
-  } catch (e) {
-    console.error(e)
-  }
+  return await faunaClient.query(q.Replace(ref, { data: { id_str } }))
 }
 
 exports.handler = async function({ httpMethod, body }) {
@@ -43,7 +31,8 @@ exports.handler = async function({ httpMethod, body }) {
 
     if (httpMethod === "PUT") {
       const db = await lastRead()
-      await mark(db.ref, body)
+      const newVar = await mark(db.ref, body)
+      console.log("mark", newVar)
       return {
         statusCode: 200,
         body: "ok"
@@ -52,9 +41,8 @@ exports.handler = async function({ httpMethod, body }) {
   } catch (err) {
     console.log(err) // output to netlify function log
     return {
-      statusCode: 500,
-      body: JSON.stringify({ msg: err.message }) // Could be a custom message or object i.e.
-      // JSON.stringify(err)
+      statusCode: err.requestResult ? err.requestResult.statusCode : 500,
+      body: err.message // Could be a custom message or object i.e.
     }
   }
 }

@@ -18,7 +18,7 @@ exports.handler = function({ queryStringParameters }, context, callback) {
       count: "200"
     },
     (error, data) => {
-      callback(error, {
+      callback(error && error.map(e => e.message), {
         statusCode: 200,
         body: JSON.stringify(data)
       })
