@@ -2,18 +2,17 @@ export default function renderTweet(tweet) {
   const retweet = tweet.retweeted_status
 
   const time = tweet.created_at ? tweet.created_at.substr(8, 8) : "When?"
-  const data = JSON.stringify(tweet).replace(/'/g, "")
   const user = getUser(retweet, tweet)
   const image = getImages(retweet || tweet)
 
   const a = `<a onclick='mark("${tweet.id_str}")'>${time}</a>`
   const i = getRetweeter(retweet, tweet)
-  const b = `<b onclick='const data = ${data};console.log(data)'>${user}</b>`
+  const b = `<b>${user}</b>`
   const text = getText(retweet, tweet)
   const images = image && `<div>${image}</div>`
   const quote = getQuote(retweet || tweet)
 
-  return `<li>${a}${i}${b} ${quote} ${text} ${images}<hr /></li>`
+  return `<li>${a}${i}${b} ${text} ${quote} ${images}<hr /></li>`
 
   function getImages(d) {
     if (!d.extended_entities || !d.extended_entities.media) return ""
