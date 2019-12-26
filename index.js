@@ -24,6 +24,9 @@ async function iife() {
 
   const tweetJson = await tweetResp.json()
 
+  const stats = document.getElementById("stats")
+  stats.insertAdjacentHTML("afterbegin", `${tweetJson.length} tweets`)
+
   const tweets = document.getElementById("tweets")
   tweetJson.forEach(tweet =>
     tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
@@ -53,6 +56,10 @@ window.mark = async function mark(id_str) {
     document.getElementById("error").innerHTML = await tweetResp.text()
     return
   }
+
+  const stats = document.getElementById("stats")
+  stats.innerHTML = ""
+  stats.insertAdjacentHTML("afterbegin", `${tweetJson.length} tweets`)
 
   tweetJson.forEach(tweet =>
     tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
