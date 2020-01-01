@@ -29,6 +29,12 @@ ul {
   text-align: center;
 }
 
-.a {
-  position: absolute;
+hr {
+  color: #eee;
+}
+
+.countdown {
+  font-family: sans-serif;
+  position: relative;
+  top: 27px;
 }
