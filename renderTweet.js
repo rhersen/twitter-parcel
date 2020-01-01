@@ -12,7 +12,7 @@ export default function renderTweet(tweet) {
   const images = image && `<div>${image}</div>`
   const quote = getQuote(retweet || tweet)
 
-  return `<li>${a}${i}${b} ${text} ${quote} ${images}<hr /></li>`
+  return `<li>${a}${i}${b} ${text} ${quote} ${images}</li>`
 
   function getImages(d) {
     if (!d.extended_entities || !d.extended_entities.media) return ""

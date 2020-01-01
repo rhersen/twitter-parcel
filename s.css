@@ -25,6 +25,10 @@ ul {
   }
 }
 
-#stats {
+.stats {
   text-align: center;
+}
+
+.a {
+  position: absolute;
 }
