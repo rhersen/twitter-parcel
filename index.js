@@ -12,24 +12,12 @@ async function iife() {
     return
   }
 
-  const faunaJson = await faunaResp.json()
-  const tweetResp = await fetch(
-    `/.netlify/functions/twitter?since_id=${faunaJson.id_str}`
-  )
+  const { id_str } = await faunaResp.json()
 
-  if (!tweetResp.ok) {
-    document.getElementById("error").innerHTML = await tweetResp.text()
-    return
-  }
-
-  const tweetJson = await tweetResp.json()
-
-  const stats = document.getElementById("stats")
-  stats.insertAdjacentHTML("afterbegin", `${tweetJson.length} tweets`)
-
-  const tweets = document.getElementById("tweets")
-  tweetJson.forEach(tweet =>
-    tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
+  await fetchAndShowTweets(
+    id_str,
+    document.getElementById("stats"),
+    document.getElementById("tweets")
   )
 }
 
@@ -45,23 +33,25 @@ window.mark = async function mark(id_str) {
     return
   }
 
+  const stats = document.getElementById("stats")
   const tweets = document.getElementById("tweets")
+  stats.innerHTML = ""
   tweets.innerHTML = ""
+  await fetchAndShowTweets(id_str, stats, tweets)
+}
+
+async function fetchAndShowTweets(id_str, stats, tweets) {
   const tweetResp = await fetch(
     `/.netlify/functions/twitter?since_id=${id_str}`
   )
-  const tweetJson = await tweetResp.json()
 
-  if (!tweetResp.ok) {
-    document.getElementById("error").innerHTML = await tweetResp.text()
-    return
-  }
+  if (tweetResp.ok) {
+    const tweetJson = await tweetResp.json()
 
-  const stats = document.getElementById("stats")
-  stats.innerHTML = ""
-  stats.insertAdjacentHTML("afterbegin", `${tweetJson.length} tweets`)
+    stats.insertAdjacentHTML("afterbegin", `${tweetJson.length} tweets`)
 
-  tweetJson.forEach(tweet =>
-    tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
-  )
+    tweetJson.forEach(tweet =>
+      tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
+    )
+  } else document.getElementById("error").innerHTML = await tweetResp.text()
 }
