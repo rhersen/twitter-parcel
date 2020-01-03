@@ -47,7 +47,7 @@ async function fetchAndShowTweets(id_str, tweets) {
       tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
       tweets.insertAdjacentHTML(
         "afterbegin",
-        `<div class="stats"><span class="countdown">${i++}</span><hr /></div>`
+        `<div class="stats"><span class="countdown">${++i}</span><hr /></div>`
       )
     })
   } else document.getElementById("error").innerHTML = await tweetResp.text()

@@ -16,12 +16,20 @@ ul {
   ul {
     width: 344px;
   }
+
+  .countdown {
+    top: 18px;
+  }
 }
 
 @media (min-width: 560px) {
   ul {
     font-size: 24px;
     width: 528px;
+  }
+
+  .countdown {
+    top: 27px;
   }
 }
 
@@ -36,5 +44,4 @@ hr {
 .countdown {
   font-family: sans-serif;
   position: relative;
-  top: 27px;
 }
