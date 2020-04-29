@@ -1,4 +1,5 @@
-import renderTweet from "./renderTweet"
+import { renderToStaticMarkup } from "react-dom/server"
+import tweet from "./tweet"
 
 iife().then(() => {
   console.log("done")
@@ -43,12 +44,17 @@ async function fetchAndShowTweets(id_str, tweets) {
     const tweetJson = await tweetResp.json()
 
     let i = 0
-    tweetJson.forEach(tweet => {
-      tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
+    tweetJson.forEach(t => {
+      tweets.insertAdjacentHTML("afterbegin", renderToStaticMarkup(tweet(t)))
       tweets.insertAdjacentHTML(
         "afterbegin",
         `<div class="stats"><span class="countdown">${++i}</span><hr /></div>`
       )
     })
+    tweets
+      .querySelectorAll("li > a")
+      .forEach(a =>
+        a.setAttribute("onclick", `mark("${a.getAttribute("id_str")}")`)
+      )
   } else document.getElementById("error").innerHTML = await tweetResp.text()
 }
