@@ -1,5 +1,5 @@
 import React from "react" // eslint-disable-line no-unused-vars
-
+import { unescape } from "lodash"
 export default tweet => {
   const retweet = tweet.retweeted_status
 
@@ -60,5 +60,5 @@ function getRetweeter(retweet, d) {
 function getText(retweetStatus, tweetStatus) {
   const data = retweetStatus || tweetStatus
 
-  return data.full_text
+  return unescape(data.full_text)
 }
