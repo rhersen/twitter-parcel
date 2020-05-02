@@ -51,7 +51,7 @@ async function fetchAndShowTweets(id_str, tweets) {
         `<div class="stats"><span class="countdown">${++i}</span><hr /></div>`
       )
     })
-    tweets.querySelectorAll("li > a").forEach(a => {
+    tweets.querySelectorAll("a.mark").forEach(a => {
       const id_str = a.getAttribute("id_str")
       a.addEventListener("click", () => window.mark(id_str))
     })

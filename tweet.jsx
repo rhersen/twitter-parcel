@@ -9,16 +9,22 @@ export default tweet => {
 
   return (
     <li>
-      <a id_str={tweet.id_str}>{time}</a> <i>{getRetweeter(retweet, tweet)}</i>{" "}
-      <b>{user}</b> {getText(retweet, tweet)}
-      {d.entities && (
-        <div>
+      <a className="mark" id_str={tweet.id_str}>
+        {time}
+      </a>{" "}
+      <i>{getRetweeter(retweet, tweet)}</i> <b>{user}</b>{" "}
+      {getText(retweet, tweet)}
+      {d.entities && d.entities.urls && d.entities.urls.length > 0 && (
+        <ol>
           {d.entities.urls.map(url => (
-            <span className="url-entity" key={url.url}>
-              {url.url}:<a href={url.url}>{url.display_url}</a>
-            </span>
+            <li className="url-entity" key={url.url}>
+              {url.url}:
+              <a href={url.url} target="_blank">
+                {url.display_url}
+              </a>
+            </li>
           ))}
-        </div>
+        </ol>
       )}
       {d.quoted_status && (
         <div className="quoted">{d.quoted_status.full_text}</div>
