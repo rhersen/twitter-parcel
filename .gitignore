@@ -1,0 +1,6 @@
+# Local Netlify folder
+.cache
+.idea
+.netlify
+dist
+node_modules
