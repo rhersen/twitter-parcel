@@ -9,7 +9,9 @@ async function iife() {
   const faunaResp = await fetch(`/.netlify/functions/fauna`)
 
   if (!faunaResp.ok) {
-    document.getElementById("error").innerHTML = await faunaResp.text()
+    document.getElementById(
+      "error"
+    ).innerHTML = `fauna GET error: ${await faunaResp.text()}`
     return
   }
 
@@ -26,7 +28,9 @@ window.mark = async function mark(id_str) {
   })
 
   if (!faunaResp.ok) {
-    document.getElementById("error").innerHTML = await faunaResp.text()
+    document.getElementById(
+      "error"
+    ).innerHTML = `fauna PUT error: ${await faunaResp.text()}`
     return
   }
 
@@ -55,5 +59,8 @@ async function fetchAndShowTweets(id_str, tweets) {
       const id_str = a.getAttribute("id_str")
       a.addEventListener("click", () => window.mark(id_str))
     })
-  } else document.getElementById("error").innerHTML = await tweetResp.text()
+  } else
+    document.getElementById(
+      "error"
+    ).innerHTML = `twitter GET error: ${await tweetResp.text()}`
 }
