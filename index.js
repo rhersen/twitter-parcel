@@ -20,7 +20,7 @@ async function iife() {
   await fetchAndShowTweets(id_str, document.getElementById("tweets"))
 }
 
-window.mark = async function mark(id_str) {
+async function mark(id_str) {
   console.log("mark", id_str)
   const faunaResp = await fetch(`/.netlify/functions/fauna`, {
     method: "PUT",
@@ -57,7 +57,9 @@ async function fetchAndShowTweets(id_str, tweets) {
     })
     tweets.querySelectorAll("a.mark").forEach(a => {
       const id_str = a.getAttribute("id_str")
-      a.addEventListener("click", () => window.mark(id_str))
+      a.addEventListener("click", async () => {
+        await mark(id_str)
+      })
     })
   } else
     document.getElementById(
