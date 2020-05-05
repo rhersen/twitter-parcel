@@ -29,9 +29,7 @@ export default tweet => {
       {d.quoted_status && (
         <div className="quoted">{d.quoted_status.full_text}</div>
       )}
-      {d.extended_entities && (
-        <div>{d.extended_entities.media.map(getImage)}</div>
-      )}
+      {d.extended_entities && d.extended_entities.media.map(getImage)}
     </li>
   )
 }
@@ -43,10 +41,30 @@ function getImage(image) {
   const small = `${image.media_url}:small`
   const large = `${image.media_url}:large`
   return (
-    <a href={large} key={image.media_url}>
-      <img src={small} width={width} height={height} />
-    </a>
+    <div>
+      <a href={large} key={image.media_url}>
+        <img src={small} width={width} height={height} />
+      </a>
+      {getVideoLink(image.video_info, image.type)}
+    </div>
   )
+}
+
+function getVideoLink(info, imageType) {
+  if (!info || !info.variants || !info.variants.length) return
+  const best = info.variants.reduce(maxBitrate)
+  const duration = info.duration_millis
+    ? `${info.duration_millis}ms`
+    : imageType
+  return <a href={best.url}>{duration}</a>
+}
+
+function maxBitrate(prev, cur) {
+  return bitrate(cur) > bitrate(prev) ? cur : prev
+}
+
+function bitrate(variant) {
+  return variant.bitrate || 0
 }
 
 function getUser(retweet, d) {
