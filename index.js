@@ -23,6 +23,11 @@ async function iife() {
 async function mark({ target }) {
   const id_str = target.getAttribute("id_str")
   console.log("mark", id_str)
+
+  const tweets = document.getElementById("tweets")
+  tweets.innerHTML = ""
+  const promise = fetchAndShowTweets(id_str, tweets)
+
   const faunaResp = await fetch(`/.netlify/functions/fauna`, {
     method: "PUT",
     body: id_str
@@ -35,9 +40,7 @@ async function mark({ target }) {
     return
   }
 
-  const tweets = document.getElementById("tweets")
-  tweets.innerHTML = ""
-  await fetchAndShowTweets(id_str, tweets)
+  await promise
 }
 
 async function fetchAndShowTweets(id_str, tweets) {
