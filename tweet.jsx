@@ -18,7 +18,7 @@ export default tweet => {
         <ol>
           {d.entities.urls.map(url => (
             <li className="url-entity" key={url.url}>
-              {url.url}:
+              {url.url}:{" "}
               <a href={url.url} target="_blank">
                 {url.display_url}
               </a>
@@ -41,8 +41,8 @@ function getImage(image) {
   const small = `${image.media_url}:small`
   const large = `${image.media_url}:large`
   return (
-    <div>
-      <a href={large} key={image.media_url}>
+    <div key={image.media_url}>
+      <a href={large}>
         <img src={small} width={width} height={height} />
       </a>
       {getVideoLink(image.video_info, image.type)}
@@ -84,5 +84,7 @@ function getRetweeter(retweet, d) {
 function getText(retweetStatus, tweetStatus) {
   const data = retweetStatus || tweetStatus
 
-  return unescape(data.full_text)
+  return data.full_text
+    .split("\n")
+    .map((s, key) => <div key={key}>{unescape(s)}</div>)
 }
