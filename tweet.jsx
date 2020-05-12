@@ -13,7 +13,7 @@ export default tweet => {
         {time}
       </a>{" "}
       <i>{getRetweeter(retweet, tweet)}</i> <b>{user}</b>{" "}
-      {getText(retweet, tweet)}
+      {getText(retweet || tweet)}
       {d.entities && d.entities.urls && d.entities.urls.length > 0 && (
         <ol>
           {d.entities.urls.map(url => (
@@ -27,7 +27,7 @@ export default tweet => {
         </ol>
       )}
       {d.quoted_status && (
-        <div className="quoted">{d.quoted_status.full_text}</div>
+        <div className="quoted">{getText(d.quoted_status)}</div>
       )}
       {d.extended_entities && d.extended_entities.media.map(getImage)}
     </li>
@@ -81,9 +81,7 @@ function getRetweeter(retweet, d) {
     : undefined
 }
 
-function getText(retweetStatus, tweetStatus) {
-  const data = retweetStatus || tweetStatus
-
+function getText(data) {
   return data.full_text
     .split("\n")
     .map((s, key) => <div key={key}>{unescape(s)}</div>)
