@@ -25,7 +25,7 @@ async function mark({ target }) {
   console.log("mark", id_str)
 
   const tweets = document.getElementById("tweets")
-  tweets.innerHTML = ""
+  tweets.innerHTML = `mark ${id_str}`
   const promise = fetchAndShowTweets(id_str, tweets)
 
   const faunaResp = await fetch(`/.netlify/functions/fauna`, {
