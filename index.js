@@ -6,17 +6,16 @@ iife().then(() => {
 })
 
 async function iife() {
+  setStatus("fauna GET")
   const faunaResp = await fetch(`/.netlify/functions/fauna`)
 
   if (!faunaResp.ok) {
-    document.getElementById(
-      "error"
-    ).innerHTML = `fauna GET error: ${await faunaResp.text()}`
+    setStatus(`fauna GET error: ${await faunaResp.text()}`)
     return
   }
 
   const { id_str } = await faunaResp.json()
-
+  setStatus("twitter GET")
   await fetchAndShowTweets(id_str, document.getElementById("tweets"))
 }
 
@@ -25,20 +24,16 @@ async function mark({ target }) {
   console.log("mark", id_str)
 
   const tweets = document.getElementById("tweets")
-  tweets.innerHTML = `mark ${id_str}`
+  tweets.innerHTML = ""
   const promise = fetchAndShowTweets(id_str, tweets)
-
+  setStatus("fauna PUT")
   const faunaResp = await fetch(`/.netlify/functions/fauna`, {
     method: "PUT",
     body: id_str
   })
 
-  if (!faunaResp.ok) {
-    document.getElementById(
-      "error"
-    ).innerHTML = `fauna PUT error: ${await faunaResp.text()}`
-    return
-  }
+  if (!faunaResp.ok) setStatus(`fauna PUT error: ${await faunaResp.text()}`)
+  else setStatus("fauna PUT OK")
 
   await promise
 }
@@ -49,6 +44,7 @@ async function fetchAndShowTweets(id_str, tweets) {
   )
 
   if (tweetResp.ok) {
+    setStatus("insertAdjacentHTML")
     const tweetJson = await tweetResp.json()
 
     let i = 0
@@ -59,11 +55,14 @@ async function fetchAndShowTweets(id_str, tweets) {
         `<div class="stats"><span class="countdown">${++i}</span><hr /></div>`
       )
     })
+    setStatus("addEventListener")
     tweets.querySelectorAll("a.mark").forEach(a => {
       a.addEventListener("click", mark)
     })
-  } else
-    document.getElementById(
-      "error"
-    ).innerHTML = `twitter GET error: ${await tweetResp.text()}`
+    setStatus("twitter GET OK")
+  } else setStatus(`twitter GET error: ${await tweetResp.text()}`)
+}
+
+function setStatus(s) {
+  document.getElementById("status").innerHTML = s
 }
