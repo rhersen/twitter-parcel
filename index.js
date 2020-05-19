@@ -25,7 +25,9 @@ async function mark({ target }) {
 
   const tweets = document.getElementById("tweets")
   tweets.innerHTML = ""
-  const promise = fetchAndShowTweets(id_str, tweets)
+
+  await fetchAndShowTweets(id_str, tweets)
+
   setStatus("fauna PUT")
   const faunaResp = await fetch(`/.netlify/functions/fauna`, {
     method: "PUT",
@@ -34,11 +36,10 @@ async function mark({ target }) {
 
   if (!faunaResp.ok) setStatus(`fauna PUT error: ${await faunaResp.text()}`)
   else setStatus("fauna PUT OK")
-
-  await promise
 }
 
 async function fetchAndShowTweets(id_str, tweets) {
+  setStatus("twitter GET")
   const tweetResp = await fetch(
     `/.netlify/functions/twitter?since_id=${id_str}`
   )
