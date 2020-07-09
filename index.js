@@ -1,4 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server"
+import { groupBy, map } from "lodash"
 import tweet from "./tweet"
 
 iife().then(() => {
@@ -56,6 +57,16 @@ async function fetchAndShowTweets(id_str, tweets) {
         `<div class="stats"><span class="countdown">${++i}</span><hr /></div>`
       )
     })
+
+    const users = groupBy(tweetJson, "user.screen_name")
+    tweets.insertAdjacentHTML(
+      "afterbegin",
+      `<table>${map(users, (value, key) => {
+        if (value.length > 4)
+          return `<tr><td>${key}</td><td>${value.length}</td></tr>`
+      }).join("")}</table>`
+    )
+
     setStatus("addEventListener")
     tweets.querySelectorAll("a.mark").forEach(a => {
       a.addEventListener("click", mark)
