@@ -1,4 +1,3 @@
-import { groupBy, map } from "lodash"
 import renderTweet from "./renderTweet"
 
 iife().then(() => {
@@ -46,8 +45,13 @@ async function fetchAndShowTweets(id_str, tweets) {
     setStatus("insertAdjacentHTML")
     const tweetJson = await tweetResp.json()
 
+    const users = {}
     let i = 0
     tweetJson.forEach(tweet => {
+      const screenName = tweet.user.screen_name
+      const found = users[screenName]
+      if (found) users[screenName] = users[screenName] + 1
+      else users[screenName] = 1
       tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
       tweets.insertAdjacentHTML(
         "afterbegin",
@@ -55,13 +59,14 @@ async function fetchAndShowTweets(id_str, tweets) {
       )
     })
 
-    const users = groupBy(tweetJson, "user.screen_name")
     tweets.insertAdjacentHTML(
       "afterbegin",
-      `<table>${map(users, (value, key) => {
-        if (value.length > 4)
-          return `<tr><td>${key}</td><td>${value.length}</td></tr>`
-      }).join("")}</table>`
+      `<table>${Object.keys(users)
+        .map(key => {
+          if (users[key] > 4)
+            return `<tr><td>${key}</td><td>${users[key]}</td></tr>`
+        })
+        .join("")}</table>`
     )
 
     setStatus("addEventListener")
