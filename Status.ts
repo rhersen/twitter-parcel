@@ -165,14 +165,9 @@ export interface QuotedStatusPermalink2 {
   display: string
 }
 
-export interface Symbol {
-  text: string
-  indices: number[]
-}
-
 export interface Entities {
   hashtags: Hashtag[]
-  symbols: Symbol[]
+  symbols: { text: string; indices: number[] }[]
   user_mentions: UserMention[]
   urls: Url[]
   media: Medium[]

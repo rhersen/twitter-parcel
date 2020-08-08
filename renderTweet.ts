@@ -1,5 +1,6 @@
 import {
   Medium,
+  QuotedStatus,
   RetweetedStatus,
   Status,
   Url,
@@ -7,7 +8,7 @@ import {
   VideoInfo
 } from "./Status"
 
-export default function renderTweet(tweet: Status) {
+export default function renderTweet(tweet: Status): string {
   const retweet: RetweetedStatus = tweet.retweeted_status
 
   const time: string = tweet.created_at
@@ -16,9 +17,9 @@ export default function renderTweet(tweet: Status) {
   const user: string = getUser(retweet, tweet)
   const image: string = getImages(retweet || tweet)
 
-  const a: string = `<a onclick='mark("${tweet.id_str}")'>${time}</a>`
+  const a = `<a onclick='mark("${tweet.id_str}")'>${time}</a>`
   const i: string = getRetweeter(retweet, tweet)
-  const b: string = `<b>${user}</b>`
+  const b = `<b>${user}</b>`
   const text: string = getText(retweet, tweet)
   const images: string = image && `<div>${image}</div>`
   const quote: string = getQuote(retweet || tweet)
@@ -87,7 +88,7 @@ function getRetweeter(retweet: RetweetedStatus, d: Status): string {
 }
 
 function getText(retweetStatus: RetweetedStatus, tweetStatus: Status): string {
-  const data = retweetStatus || tweetStatus
+  const data: RetweetedStatus | Status = retweetStatus || tweetStatus
 
   return data.entities
     ? data.entities.urls.reduce(replaceUrlWithLink, fullText(data))
@@ -102,11 +103,12 @@ function getText(retweetStatus: RetweetedStatus, tweetStatus: Status): string {
 }
 
 function getQuote(d: RetweetedStatus | Status): string {
-  return d.quoted_status
-    ? `<div class="quoted">${fullText(d.quoted_status)}</div>`
+  const quotedStatus: QuotedStatus = d.quoted_status
+  return quotedStatus
+    ? `<div class="quoted">${fullText(quotedStatus)}</div>`
     : ""
 }
 
-function fullText(data): string {
+function fullText(data: Status | QuotedStatus): string {
   return data.full_text && data.full_text.replace(/\n/g, "<br>")
 }
