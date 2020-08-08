@@ -1,4 +1,5 @@
 import renderTweet from "./renderTweet"
+import { getUsers } from "./users"
 
 iife().then(() => {
   console.log("done")
@@ -44,14 +45,10 @@ async function fetchAndShowTweets(id_str, tweets) {
   if (tweetResp.ok) {
     setStatus("insertAdjacentHTML")
     const tweetJson = await tweetResp.json()
+    const users = getUsers(tweetJson)
 
-    const users = {}
     let i = 0
     tweetJson.forEach(tweet => {
-      const screenName = tweet.user.screen_name
-      const found = users[screenName]
-      if (found) users[screenName] = users[screenName] + 1
-      else users[screenName] = 1
       tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
       tweets.insertAdjacentHTML(
         "afterbegin",
@@ -63,7 +60,7 @@ async function fetchAndShowTweets(id_str, tweets) {
       "afterbegin",
       `<table>${Object.keys(users)
         .map(key => {
-          if (users[key] > 3)
+          if (users[key] > 4)
             return `<tr><td>${key}</td><td>${users[key]}</td></tr>`
         })
         .join("")}</table>`
