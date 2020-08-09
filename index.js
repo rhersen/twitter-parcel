@@ -61,7 +61,8 @@ async function fetchAndShowTweets(id_str, tweets) {
       `<table>${Object.keys(users)
         .map(key => {
           if (users[key] > 4)
-            return `<tr><td>${users[key]}</td><td>${key}</td></tr>`})
+            return `<tr><td>${key}</td><td>${users[key]}</td></tr>`
+        })
         .join("")}</table>`
     )
 
