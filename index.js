@@ -1,5 +1,5 @@
 import renderTweet from "./renderTweet"
-import { getUsers } from "./users"
+import getUsers from "./users"
 
 iife().then(() => {
   console.log("done")
@@ -61,8 +61,7 @@ async function fetchAndShowTweets(id_str, tweets) {
       `<table>${Object.keys(users)
         .map(key => {
           if (users[key] > 4)
-            return `<tr><td>${key}</td><td>${users[key]}</td></tr>`
-        })
+            return `<tr><td>${users[key]}</td><td>${key}</td></tr>`})
         .join("")}</table>`
     )
 
