@@ -1,1 +1,6 @@
-{ "include": ["*.ts"] }
+{
+  "include": ["*.ts"],
+  "compilerOptions": {
+    "lib": ["es2015", "dom"]
+  }
+}
