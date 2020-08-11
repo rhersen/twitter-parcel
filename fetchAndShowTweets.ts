@@ -1,6 +1,7 @@
 import getUsers from "./users"
 import renderTweet from "./renderTweet"
 import { Status } from "./Status"
+import { MyWindow } from "./MyWindow"
 
 export async function fetchAndShowTweets(
   id_str: string,
@@ -44,8 +45,4 @@ export async function fetchAndShowTweets(
   function setStatus(s: string) {
     document.getElementById("status").innerHTML = s
   }
-}
-
-interface MyWindow extends Window {
-  mark?: (string) => void
 }

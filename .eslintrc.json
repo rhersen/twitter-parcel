@@ -42,6 +42,8 @@
     "prefer-const": "error",
     "prefer-destructuring": "error",
     "prefer-numeric-literals": "error",
-    "prefer-template": "error"
+    "prefer-template": "error",
+
+    "@typescript-eslint/no-extra-semi": "off"
   }
 }
