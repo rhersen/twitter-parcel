@@ -17,7 +17,7 @@ export default function renderTweet(tweet: Status): string {
   const user: string = getUser(retweet, tweet)
   const image: string = getImages(retweet || tweet)
 
-  const a = `<a onclick='mark("${tweet.id_str}")'>${time}</a>`
+  const a = `<a href='https://twitter.com/${user}/status/${tweet.id_str}' target="_blank">${time}</a>`
   const i: string = getRetweeter(retweet, tweet)
   const b = `<b>${user}</b>`
   const text: string = getText(retweet, tweet)

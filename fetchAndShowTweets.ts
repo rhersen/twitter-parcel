@@ -21,7 +21,9 @@ export async function fetchAndShowTweets(
       tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
       tweets.insertAdjacentHTML(
         "afterbegin",
-        `<div class="stats"><span class="countdown">${++i}</span><hr /></div>`
+        `<div class="stats"><span class="countdown" onclick='mark("${
+          tweet.id_str
+        }")'>${++i}</span><hr /></div>`
       )
     })
 
