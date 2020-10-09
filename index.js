@@ -1,9 +1,4 @@
 import { fetchAndShowTweets } from "./fetchAndShowTweets"
-import { MyWindow } from "./MyWindow"
-
-interface LastRead {
-  id_str: string
-}
 
 iife().then(
   () => {
@@ -23,12 +18,12 @@ async function iife() {
     return
   }
 
-  const { id_str } = (await faunaResp.json()) as LastRead
-  setStatus("twitter GET")
+  const { id_str } = await faunaResp.json()
+  setStatus("Welcome!")
   await fetchAndShowTweets(id_str, document.getElementById("tweets"))
 }
 
-;(window as MyWindow).mark = async function mark(id_str: string) {
+window.mark = async function mark(id_str) {
   console.log("mark", id_str)
 
   setStatus("twitter GET")
@@ -46,6 +41,6 @@ async function iife() {
   else setStatus("fauna PUT OK")
 }
 
-function setStatus(s: string) {
+function setStatus(s) {
   document.getElementById("status").innerHTML = s
 }

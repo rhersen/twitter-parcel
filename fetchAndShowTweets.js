@@ -1,19 +1,14 @@
 import getUsers from "./users"
 import renderTweet from "./renderTweet"
-import { Status } from "./Status"
-import { MyWindow } from "./MyWindow"
 
-export async function fetchAndShowTweets(
-  id_str: string,
-  tweets: HTMLElement
-): Promise<void> {
+export async function fetchAndShowTweets(id_str, tweets) {
   const tweetResp = await fetch(
     `/.netlify/functions/twitter?since_id=${id_str}`
   )
 
   if (tweetResp.ok) {
     setStatus("insertAdjacentHTML")
-    const tweetJson = (await tweetResp.json()) as Status[]
+    const tweetJson = await tweetResp.json()
     const users = getUsers(tweetJson)
 
     let i = 0
@@ -39,12 +34,12 @@ export async function fetchAndShowTweets(
 
     setStatus("addEventListener")
     tweets.querySelectorAll("a.mark").forEach(a => {
-      a.addEventListener("click", (window as MyWindow).mark)
+      a.addEventListener("click", window.mark)
     })
     setStatus("twitter GET OK")
   } else setStatus(`twitter GET error: ${await tweetResp.text()}`)
 
-  function setStatus(s: string) {
+  function setStatus(s) {
     document.getElementById("status").innerHTML = s
   }
 }

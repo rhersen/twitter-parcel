@@ -1,7 +1,7 @@
 {
   "name": "twitter-parcel",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "index.js",
   "license": "MIT",
   "browserslist": [
     "> 2%"
@@ -10,7 +10,6 @@
     "dev": "parcel index.html",
     "build": "parcel build index.html",
     "postbuild": "cd functions/fauna && npm install && cd - && cd functions/twitter && npm install",
-    "test": "eslint *.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.8.0",
