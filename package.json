@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "parcel index.html",
     "build": "parcel build index.html",
-    "postbuild": "cd functions/fauna && npm install && cd - && cd functions/twitter && npm install",
+    "postbuild": "cd functions/fauna && npm install && cd - && cd functions/twitter && npm install"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.8.0",
