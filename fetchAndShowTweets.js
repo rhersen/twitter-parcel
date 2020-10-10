@@ -1,4 +1,4 @@
-import { getUsers } from "./users.js"
+import { getUsers } from "./Users.bs.js"
 import { renderTweet } from "./renderTweet.js"
 
 export async function fetchAndShowTweets(id_str, tweets) {

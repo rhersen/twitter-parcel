@@ -10,7 +10,7 @@ iife().then(
 )
 
 async function iife() {
-  setStatus("fauna GET")
+  setStatus("ReScript!")
   const faunaResp = await fetch(`/.netlify/functions/fauna`)
 
   if (!faunaResp.ok) {
@@ -19,7 +19,7 @@ async function iife() {
   }
 
   const { id_str } = await faunaResp.json()
-  setStatus("Welcome!")
+  setStatus("twitter GET")
   await fetchAndShowTweets(id_str, document.getElementById("tweets"))
 }
 

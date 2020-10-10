@@ -12,6 +12,7 @@
     "postbuild": "cd functions/fauna && npm install && cd - && cd functions/twitter && npm install"
   },
   "devDependencies": {
+    "bs-platform": "^8.2.0",
     "eslint": "^7.6.0",
     "eslint-plugin-prettier": "^3.1.4",
     "prettier": "^1.18.2"
