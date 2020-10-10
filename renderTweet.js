@@ -1,4 +1,4 @@
-export default function renderTweet(tweet) {
+export function renderTweet(tweet) {
   const retweet = tweet.retweeted_status
 
   const time = tweet.created_at ? tweet.created_at.substr(8, 8) : "When?"

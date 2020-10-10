@@ -1,5 +1,5 @@
-export default tweets =>
-  tweets
+export function getUsers(tweets) {
+  return tweets
     .map(tweet => tweet.user.screen_name)
     .reduce(
       (users, screenName) => ({
@@ -8,3 +8,4 @@ export default tweets =>
       }),
       {}
     )
+}

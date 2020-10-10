@@ -1,5 +1,5 @@
-import getUsers from "./users.js"
-import renderTweet from "./renderTweet.js"
+import { getUsers } from "./users.js"
+import { renderTweet } from "./renderTweet.js"
 
 export async function fetchAndShowTweets(id_str, tweets) {
   const tweetResp = await fetch(
