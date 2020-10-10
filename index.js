@@ -1,4 +1,4 @@
-import { fetchAndShowTweets } from "./fetchAndShowTweets"
+import { fetchAndShowTweets } from "./fetchAndShowTweets.js"
 
 iife().then(
   () => {
