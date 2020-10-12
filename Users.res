@@ -1,20 +1,14 @@
-let screenName = tweet => tweet["user"]["screen_name"]
-let users = Js.Dict.empty()
+let getUsers = tweets => {
+  let users = Js.Dict.empty()
+  let screenNames = Js.Array.map(tweet => tweet["user"]["screen_name"], tweets)
 
-let zero = screenName => Js.Dict.set(users, screenName, 0)
-let reducer = screenName => Js.Dict.set(users, screenName, Js.Dict.unsafeGet(users, screenName) + 1)
-
-%%raw(
-  `
-const getUsers = tweets => {
-  users = {}
-  const screenNames = tweets.map(screenName)
-
-  screenNames.forEach(zero)
-  screenNames.forEach(reducer)
-  return users
+  Js.Array.forEach(screenName => Js.Dict.set(users, screenName, 0), screenNames)
+  Js.Array.forEach(
+    screenName => {
+      let count = Js.Dict.unsafeGet(users, screenName)
+      Js.Dict.set(users, screenName, count + 1)
+    },
+    screenNames,
+  )
+  users
 }
-
-export { getUsers }
-`
-)
