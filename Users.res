@@ -8,6 +8,7 @@ let reducer = screenName => {
 
 %%raw(`
 const getUsers = tweets => {
+  users = {}
   const screenNames = tweets.map(screenName)
 
   screenNames.forEach(reducer)
