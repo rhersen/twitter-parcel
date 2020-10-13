@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "echo dev",
-    "build": "rm -Rf dist && bsb -make-world && mkdir dist && cp index.html s.css index.js fetchAndShowTweets.js renderTweet.js Users.bs.js dist/",
+    "build": "rm -Rf dist && bsb -make-world && mkdir dist && cp index.html s.css index.js fetchAndShowTweets.js Tweet.bs.js Users.bs.js dist/",
     "postbuild": "cd functions/fauna && npm install && cd - && cd functions/twitter && npm install"
   },
   "devDependencies": {
