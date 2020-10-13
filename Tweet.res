@@ -100,8 +100,11 @@ function getText(retweetStatus, tweetStatus) {
   function replaceUrlWithLink(text, url) {
     return text.replace(
       url.url,
-      '<a href="' + url.url + '" target="_blank">' + url.display_url ||
-        url.url + "</a>"
+      '<a href="' +
+        url.url +
+        '" target="_blank">' +
+        (url.display_url || url.url) +
+        "</a>"
     )
   }
 }
