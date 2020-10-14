@@ -1,3 +1,33 @@
+let getString = (dict, key) => {
+  if Js.Array.includes(key, Js.Dict.keys(dict)) {
+    Js.Dict.unsafeGet(dict, key)
+  } else {
+    ""
+  }
+}
+
+let getDict = (dict, key) => {
+  if Js.Array.includes(key, Js.Dict.keys(dict)) {
+    Js.Dict.unsafeGet(dict, key)
+  } else {
+    Js.Dict.empty()
+  }
+}
+
+let fullText = data => {
+  Js.String.replaceByRe(%re("/\\n/g"), "<br>", getString(data, "full_text"))
+}
+
+let getQuote = d => {
+  let quotedStatus = getDict(d, "quoted_status")
+  let keys = Js.Dict.keys(quotedStatus)
+  if Js.Array.length(keys) != 0 {
+    `<div class="quoted">${fullText(quotedStatus)}${"</div>"}`
+  } else {
+    ""
+  }
+}
+
 %%raw(`
 export function renderTweet(tweet) {
   const retweet = tweet.retweeted_status
@@ -107,16 +137,5 @@ function getText(retweetStatus, tweetStatus) {
         "</a>"
     )
   }
-}
-
-function getQuote(d) {
-  const quotedStatus = d.quoted_status
-  return quotedStatus
-    ? '<div class="quoted">' + fullText(quotedStatus) + "</div>"
-    : ""
-}
-
-function fullText(data) {
-  return data.full_text && data.full_text.replace(/\\n/g, "<br>")
 }
 `)

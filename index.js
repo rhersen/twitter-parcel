@@ -10,7 +10,7 @@ iife().then(
 )
 
 async function iife() {
-  setStatus("Tweet.bs.js")
+  setStatus("fauna GET")
   const faunaResp = await fetch(`/.netlify/functions/fauna`)
 
   if (!faunaResp.ok) {
@@ -20,7 +20,12 @@ async function iife() {
 
   const { id_str } = await faunaResp.json()
   setStatus("twitter GET")
-  await fetchAndShowTweets(id_str, document.getElementById("tweets"))
+
+  try {
+    await fetchAndShowTweets(id_str, document.getElementById("tweets"))
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 window.mark = async function mark(id_str) {
@@ -29,7 +34,12 @@ window.mark = async function mark(id_str) {
   setStatus("twitter GET")
   const tweets = document.getElementById("tweets")
   tweets.innerHTML = ""
-  await fetchAndShowTweets(id_str, tweets)
+
+  try {
+    await fetchAndShowTweets(id_str, tweets)
+  } catch (e) {
+    console.error(e)
+  }
 
   setStatus("fauna PUT")
   const faunaResp = await fetch(`/.netlify/functions/fauna`, {
