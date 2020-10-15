@@ -1,5 +1,7 @@
+let has = (dict, key) => Js.Array.includes(key, Js.Dict.keys(dict))
+
 let getString = (dict, key) => {
-  if Js.Array.includes(key, Js.Dict.keys(dict)) {
+  if has(dict, key) {
     Js.Dict.unsafeGet(dict, key)
   } else {
     ""
@@ -7,7 +9,7 @@ let getString = (dict, key) => {
 }
 
 let getDict = (dict, key) => {
-  if Js.Array.includes(key, Js.Dict.keys(dict)) {
+  if has(dict, key) {
     Js.Dict.unsafeGet(dict, key)
   } else {
     Js.Dict.empty()
@@ -20,15 +22,25 @@ let fullText = data => {
 
 let getQuote = d => {
   let quotedStatus = getDict(d, "quoted_status")
-  let keys = Js.Dict.keys(quotedStatus)
-  if Js.Array.length(keys) != 0 {
+  if Js.Array.length(Js.Dict.keys(quotedStatus)) != 0 {
     `<div class="quoted">${fullText(quotedStatus)}${"</div>"}`
   } else {
     ""
   }
 }
 
-%%raw(`
+let replaceUrlWithLink = (text, dict) => {
+  let url = getString(dict, "url")
+  let displayUrl = if has(dict, "display_url") {
+    getString(dict, "display_url")
+  } else {
+    url
+  }
+  Js.String.replace(url, `<a href="${url}" target="_blank">${displayUrl}${"</a>"}`, text)
+}
+
+%%raw(
+  `
 export function renderTweet(tweet) {
   const retweet = tweet.retweeted_status
 
@@ -126,16 +138,6 @@ function getText(retweetStatus, tweetStatus) {
   return data.entities
     ? data.entities.urls.reduce(replaceUrlWithLink, fullText(data))
     : fullText(data)
-
-  function replaceUrlWithLink(text, url) {
-    return text.replace(
-      url.url,
-      '<a href="' +
-        url.url +
-        '" target="_blank">' +
-        (url.display_url || url.url) +
-        "</a>"
-    )
   }
-}
-`)
+`
+)
