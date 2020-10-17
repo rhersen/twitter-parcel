@@ -1,59 +1,47 @@
-let has = (dict, key) => Js.Array.includes(key, Js.Dict.keys(dict))
-
-let getString = (dict, key) => {
-  if has(dict, key) {
-    Js.Dict.unsafeGet(dict, key)
-  } else {
-    ""
-  }
+type url = {
+  url: string,
+  display_url: option<string>,
 }
 
-let getDict = (dict, key) => {
-  if has(dict, key) {
-    Js.Dict.unsafeGet(dict, key)
-  } else {
-    Js.Dict.empty()
-  }
-}
+type entities = {urls: array<url>}
 
-let getArray = (dict, key) => {
-  if has(dict, key) {
-    Js.Dict.unsafeGet(dict, key)
-  } else {
-    []
-  }
+type rec status = {
+  full_text: string,
+  quoted_status: option<status>,
+  entities: option<entities>,
 }
 
 let fullText = data => {
-  Js.String.replaceByRe(%re("/\\n/g"), "<br>", getString(data, "full_text"))
+  Js.String.replaceByRe(%re("/\\n/g"), "<br>", data.full_text)
 }
 
 let getQuote = d => {
-  let quotedStatus = getDict(d, "quoted_status")
-  if Js.Array.length(Js.Dict.keys(quotedStatus)) != 0 {
-    `<div class="quoted">${fullText(quotedStatus)}${"</div>"}`
-  } else {
-    ""
+  switch d.quoted_status {
+  | Some(quotedStatus) => `<div class="quoted">${fullText(quotedStatus)}${"</div>"}`
+  | None => ""
   }
 }
 
 let replaceUrlWithLink = (text, dict) => {
-  let url = getString(dict, "url")
-  let displayUrl = if has(dict, "display_url") {
-    getString(dict, "display_url")
-  } else {
-    url
+  let url = dict.url
+  let displayUrl = switch dict.display_url {
+  | Some(value) => value
+  | None => url
   }
   Js.String.replace(url, `<a href="${url}" target="_blank">${displayUrl}${"</a>"}`, text)
 }
 
-let reduce = (data, text) =>
-  if has(data, "entities") {
-    Js.Array.reduce(replaceUrlWithLink, text, getArray(getDict(data, "entities"), "urls"))
-  } else {
-    text
+let getText = (retweetStatus, tweetStatus) => {
+  let data = switch retweetStatus {
+  | Some(value) => value
+  | None => tweetStatus
   }
-
+  let text = fullText(data)
+  switch data.entities {
+  | Some(value) => Js.Array.reduce(replaceUrlWithLink, text, value.urls)
+  | None => text
+  }
+}
 %%raw(
   `
 export function renderTweet(tweet) {
@@ -146,12 +134,5 @@ function getRetweeter(retweet, d) {
     ? " <i>" + d.user.screen_name + "</i> "
     : " "
 }
-
-function getText(retweetStatus, tweetStatus) {
-  const data = retweetStatus || tweetStatus
-  const text = fullText(data)
-
-  return reduce(data, text)
-  }
 `
 )
