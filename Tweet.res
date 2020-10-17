@@ -16,6 +16,14 @@ let getDict = (dict, key) => {
   }
 }
 
+let getArray = (dict, key) => {
+  if has(dict, key) {
+    Js.Dict.unsafeGet(dict, key)
+  } else {
+    []
+  }
+}
+
 let fullText = data => {
   Js.String.replaceByRe(%re("/\\n/g"), "<br>", getString(data, "full_text"))
 }
@@ -38,6 +46,13 @@ let replaceUrlWithLink = (text, dict) => {
   }
   Js.String.replace(url, `<a href="${url}" target="_blank">${displayUrl}${"</a>"}`, text)
 }
+
+let reduce = (data, text) =>
+  if has(data, "entities") {
+    Js.Array.reduce(replaceUrlWithLink, text, getArray(getDict(data, "entities"), "urls"))
+  } else {
+    text
+  }
 
 %%raw(
   `
@@ -134,10 +149,9 @@ function getRetweeter(retweet, d) {
 
 function getText(retweetStatus, tweetStatus) {
   const data = retweetStatus || tweetStatus
+  const text = fullText(data)
 
-  return data.entities
-    ? data.entities.urls.reduce(replaceUrlWithLink, fullText(data))
-    : fullText(data)
+  return reduce(data, text)
   }
 `
 )
