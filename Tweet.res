@@ -1,3 +1,5 @@
+type variant = {bitrate: float}
+
 type url = {
   url: string,
   display_url: string,
@@ -50,6 +52,17 @@ let getUser = (retweet, d) =>
   switch retweet {
   | Some(value) => value.user.screen_name
   | None => d.user.screen_name
+  }
+
+let bitrate = variant => {
+  variant.bitrate
+}
+
+let maxBitrate = (prev, cur) =>
+  if bitrate(cur) > bitrate(prev) {
+    cur
+  } else {
+    prev
   }
 
 %%raw(
@@ -119,14 +132,6 @@ export function renderTweet(tweet) {
         ? info.duration_millis + "ms"
         : imageType
       return '<a href="' + best.url + '">' + duration + "</a>"
-    }
-
-    function maxBitrate(prev, cur) {
-      return bitrate(cur) > bitrate(prev) ? cur : prev
-    }
-
-    function bitrate(variant) {
-      return variant.bitrate || 0
     }
   }
 }
