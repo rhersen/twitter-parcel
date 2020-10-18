@@ -45,6 +45,13 @@ let getRetweeter = (retweet, d) => {
   | None => " "
   }
 }
+
+let getUser = (retweet, d) =>
+  switch retweet {
+  | Some(value) => value.user.screen_name
+  | None => d.user.screen_name
+  }
+
 %%raw(
   `
 export function renderTweet(tweet) {
@@ -122,14 +129,6 @@ export function renderTweet(tweet) {
       return variant.bitrate || 0
     }
   }
-}
-
-function getUser(retweet, d) {
-  return retweet && retweet.user
-    ? retweet.user.screen_name
-    : d.user
-    ? d.user.screen_name
-    : "Who?"
 }
 `
 )
