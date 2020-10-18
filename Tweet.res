@@ -1,14 +1,17 @@
 type url = {
   url: string,
-  display_url: option<string>,
+  display_url: string,
 }
 
 type entities = {urls: array<url>}
 
+type user = {screen_name: string}
+
 type rec status = {
   full_text: string,
+  user: user,
   quoted_status: option<status>,
-  entities: option<entities>,
+  entities: entities,
 }
 
 let fullText = data => {
@@ -24,11 +27,7 @@ let getQuote = d => {
 
 let replaceUrlWithLink = (text, dict) => {
   let url = dict.url
-  let displayUrl = switch dict.display_url {
-  | Some(value) => value
-  | None => url
-  }
-  Js.String.replace(url, `<a href="${url}" target="_blank">${displayUrl}${"</a>"}`, text)
+  Js.String.replace(url, `<a href="${url}" target="_blank">${dict.display_url}${"</a>"}`, text)
 }
 
 let getText = (retweetStatus, tweetStatus) => {
@@ -37,9 +36,13 @@ let getText = (retweetStatus, tweetStatus) => {
   | None => tweetStatus
   }
   let text = fullText(data)
-  switch data.entities {
-  | Some(value) => Js.Array.reduce(replaceUrlWithLink, text, value.urls)
-  | None => text
+  Js.Array.reduce(replaceUrlWithLink, text, data.entities.urls)
+}
+
+let getRetweeter = (retweet, d) => {
+  switch retweet {
+  | Some() => " <i>" ++ d.user.screen_name ++ "</i> "
+  | None => " "
   }
 }
 %%raw(
@@ -127,12 +130,6 @@ function getUser(retweet, d) {
     : d.user
     ? d.user.screen_name
     : "Who?"
-}
-
-function getRetweeter(retweet, d) {
-  return retweet && d.user && d.user.screen_name
-    ? " <i>" + d.user.screen_name + "</i> "
-    : " "
 }
 `
 )

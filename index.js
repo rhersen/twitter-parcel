@@ -10,7 +10,7 @@ iife().then(
 )
 
 async function iife() {
-  setStatus("record")
+  setStatus("fauna GET")
   const faunaResp = await fetch(`/.netlify/functions/fauna`)
 
   if (!faunaResp.ok) {
