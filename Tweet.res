@@ -1,4 +1,9 @@
-type variant = {bitrate: float}
+type variant = {bitrate: float, url: string}
+
+type videoInfo = {
+  duration_millis: float,
+  variants: array<variant>,
+}
 
 type url = {
   url: string,
@@ -65,6 +70,24 @@ let maxBitrate = (prev, cur) =>
     prev
   }
 
+let getVideoLink = (info: option<videoInfo>) => {
+  let variants = switch info {
+  | Some(value) => value.variants
+  | None => []
+  }
+  if Js.Array.length(variants) == 0 {
+    ""
+  } else {
+    let best = Js.Array.reduce(maxBitrate, {bitrate: 0., url: ""}, variants)
+    let duration_millis = switch info {
+    | Some(value) => value.duration_millis
+    | None => 0.
+    }
+    let duration = j`$duration_millis ms`
+    `<a href="${best.url}">${duration}${"</a>"}`
+  }
+}
+
 %%raw(
   `
 export function renderTweet(tweet) {
@@ -121,17 +144,8 @@ export function renderTweet(tweet) {
         '" height="' +
         height +
         '" />'
-      const duration = getVideoLink(image.video_info, image.type)
+      const duration = getVideoLink(image.video_info)
       return '<a href="' + large + '">' + img + "</a>" + duration
-    }
-
-    function getVideoLink(info, imageType) {
-      if (!info || !info.variants || !info.variants.length) return ""
-      const best = info.variants.reduce(maxBitrate)
-      const duration = info.duration_millis
-        ? info.duration_millis + "ms"
-        : imageType
-      return '<a href="' + best.url + '">' + duration + "</a>"
     }
   }
 }

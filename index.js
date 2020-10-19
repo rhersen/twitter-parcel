@@ -10,7 +10,7 @@ iife().then(
 )
 
 async function iife() {
-  setStatus("fauna GET")
+  setStatus("video link")
   const faunaResp = await fetch(`/.netlify/functions/fauna`)
 
   if (!faunaResp.ok) {
