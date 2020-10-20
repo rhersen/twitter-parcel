@@ -20,6 +20,7 @@ type videoInfo = {
 
 type medium = {
   media_url: string,
+  \"type": string,
   sizes: sizes,
   video_info: option<videoInfo>,
 }
@@ -113,9 +114,13 @@ let getImage = image => {
   let height = size.h /. 2.
   let small = image.media_url ++ ":small"
   let large = image.media_url ++ ":large"
-  let img = `<img src="${small}" width="$width" height="$height" />`
+  let img = j`<img src="${small}" width="$width" height="$height" />`
   let duration = getVideoLink(image.video_info)
   `<a href="${large}">${img}${"</a>"}${duration}`
+}
+
+let isPhoto = img => {
+  img.\"type" == "photo" || img.\"type" == "video" || img.\"type" == "animated_gif"
 }
 
 %%raw(
@@ -150,14 +155,6 @@ export function renderTweet(tweet) {
       .filter(isPhoto)
       .map(getImage)
       .join("")
-
-    function isPhoto(img) {
-      return (
-        img.type === "photo" ||
-        img.type === "video" ||
-        img.type === "animated_gif"
-      )
-    }
   }
 }
 `
