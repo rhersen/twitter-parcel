@@ -1,8 +1,27 @@
+type size = {
+  w: float,
+  h: float,
+  resize: string,
+}
+
+type sizes = {
+  large: size,
+  medium: size,
+  small: size,
+  thumb: size,
+}
+
 type variant = {bitrate: float, url: string}
 
 type videoInfo = {
   duration_millis: float,
   variants: array<variant>,
+}
+
+type medium = {
+  media_url: string,
+  sizes: sizes,
+  video_info: option<videoInfo>,
 }
 
 type url = {
@@ -88,6 +107,17 @@ let getVideoLink = (info: option<videoInfo>) => {
   }
 }
 
+let getImage = image => {
+  let size = image.sizes.small
+  let width = size.w /. 2.
+  let height = size.h /. 2.
+  let small = image.media_url ++ ":small"
+  let large = image.media_url ++ ":large"
+  let img = `<img src="${small}" width="$width" height="$height" />`
+  let duration = getVideoLink(image.video_info)
+  `<a href="${large}">${img}${"</a>"}${duration}`
+}
+
 %%raw(
   `
 export function renderTweet(tweet) {
@@ -127,25 +157,6 @@ export function renderTweet(tweet) {
         img.type === "video" ||
         img.type === "animated_gif"
       )
-    }
-
-    function getImage(image) {
-      const size = image.sizes.small
-      const width = size.w / 2
-      const height = size.h / 2
-      const small = image.media_url + ":small"
-      const large = image.media_url + ":large"
-      // noinspection HtmlRequiredAltAttribute
-      const img =
-        '<img src="' +
-        small +
-        '" width="' +
-        width +
-        '" height="' +
-        height +
-        '" />'
-      const duration = getVideoLink(image.video_info)
-      return '<a href="' + large + '">' + img + "</a>" + duration
     }
   }
 }
