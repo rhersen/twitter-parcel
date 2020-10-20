@@ -34,11 +34,14 @@ type entities = {urls: array<url>}
 
 type user = {screen_name: string}
 
+type extendedEntities = {media: array<medium>}
+
 type rec status = {
   full_text: string,
   user: user,
   quoted_status: option<status>,
   entities: entities,
+  extended_entities: option<extendedEntities>,
 }
 
 let fullText = data => {
@@ -123,6 +126,14 @@ let isPhoto = img => {
   img.\"type" == "photo" || img.\"type" == "video" || img.\"type" == "animated_gif"
 }
 
+let getImages = d => {
+  switch d.extended_entities {
+  | Some(value) =>
+    Js.Array.filter(isPhoto, value.media) |> Js.Array.map(getImage) |> Js.Array.joinWith("")
+  | None => ""
+  }
+}
+
 %%raw(
   `
 export function renderTweet(tweet) {
@@ -147,15 +158,6 @@ export function renderTweet(tweet) {
   const quote = getQuote(retweet || tweet)
 
   return "<li>" + a + i + b + " " + text + " " + quote + " " + images + "</li>"
-
-  function getImages(d) {
-    if (!d.extended_entities || !d.extended_entities.media) return ""
-
-    return d.extended_entities.media
-      .filter(isPhoto)
-      .map(getImage)
-      .join("")
-  }
 }
 `
 )
