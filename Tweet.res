@@ -14,7 +14,7 @@ type sizes = {
 type variant = {bitrate: float, url: string}
 
 type videoInfo = {
-  duration_millis: float,
+  duration_millis: option<float>,
   variants: array<variant>,
 }
 
@@ -103,7 +103,11 @@ let getVideoLink = (info: option<videoInfo>) => {
   } else {
     let best = Js.Array.reduce(maxBitrate, {bitrate: 0., url: ""}, variants)
     let duration_millis = switch info {
-    | Some(value) => value.duration_millis
+    | Some(value) =>
+      switch value.duration_millis {
+      | Some(value) => value
+      | None => 0.
+      }
     | None => 0.
     }
     let duration = j`$duration_millis ms`
