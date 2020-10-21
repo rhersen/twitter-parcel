@@ -37,131 +37,128 @@ type user = {screen_name: string}
 type extendedEntities = {media: array<medium>}
 
 type rec status = {
+  created_at: string,
+  id_str: string,
   full_text: string,
   user: user,
+  retweeted_status: option<status>,
   quoted_status: option<status>,
   entities: entities,
   extended_entities: option<extendedEntities>,
 }
 
-let fullText = data => {
-  Js.String.replaceByRe(%re("/\\n/g"), "<br>", data.full_text)
-}
-
-let getQuote = d => {
-  switch d.quoted_status {
-  | Some(quotedStatus) => `<div class="quoted">${fullText(quotedStatus)}${"</div>"}`
-  | None => ""
-  }
-}
-
-let replaceUrlWithLink = (text, dict) => {
-  let url = dict.url
-  Js.String.replace(url, `<a href="${url}" target="_blank">${dict.display_url}${"</a>"}`, text)
-}
-
-let getText = (retweetStatus, tweetStatus) => {
-  let data = switch retweetStatus {
-  | Some(value) => value
-  | None => tweetStatus
-  }
-  let text = fullText(data)
-  Js.Array.reduce(replaceUrlWithLink, text, data.entities.urls)
-}
-
-let getRetweeter = (retweet, d) => {
-  switch retweet {
-  | Some() => " <i>" ++ d.user.screen_name ++ "</i> "
-  | None => " "
-  }
-}
-
-let getUser = (retweet, d) =>
-  switch retweet {
-  | Some(value) => value.user.screen_name
-  | None => d.user.screen_name
+let renderTweet = tweet => {
+  let fullText = data => {
+    Js.String.replaceByRe(%re("/\\n/g"), "<br>", data.full_text)
   }
 
-let bitrate = variant => {
-  variant.bitrate
-}
-
-let maxBitrate = (prev, cur) =>
-  if bitrate(cur) > bitrate(prev) {
-    cur
-  } else {
-    prev
+  let getQuote = d => {
+    switch d.quoted_status {
+    | Some(quotedStatus) => `<div class="quoted">${fullText(quotedStatus)}${"</div>"}`
+    | None => ""
+    }
   }
 
-let getVideoLink = (info: option<videoInfo>) => {
-  let variants = switch info {
-  | Some(value) => value.variants
-  | None => []
+  let replaceUrlWithLink = (text, dict) => {
+    let url = dict.url
+    Js.String.replace(url, `<a href="${url}" target="_blank">${dict.display_url}${"</a>"}`, text)
   }
-  if Js.Array.length(variants) == 0 {
-    ""
-  } else {
-    let best = Js.Array.reduce(maxBitrate, {bitrate: 0., url: ""}, variants)
-    let duration_millis = switch info {
-    | Some(value) =>
-      switch value.duration_millis {
-      | Some(value) => value
+
+  let getText = (retweetStatus, tweetStatus) => {
+    let data = switch retweetStatus {
+    | Some(value) => value
+    | None => tweetStatus
+    }
+    let text = fullText(data)
+    Js.Array.reduce(replaceUrlWithLink, text, data.entities.urls)
+  }
+
+  let getRetweeter = (retweet, d) => {
+    switch retweet {
+    | Some(status) => " <i>" ++ d.user.screen_name ++ "</i> "
+    | None => " "
+    }
+  }
+
+  let getUser = (retweet, d) =>
+    switch retweet {
+    | Some(value) => value.user.screen_name
+    | None => d.user.screen_name
+    }
+
+  let bitrate = variant => {
+    variant.bitrate
+  }
+
+  let maxBitrate = (prev, cur) =>
+    if bitrate(cur) > bitrate(prev) {
+      cur
+    } else {
+      prev
+    }
+
+  let getVideoLink = (info: option<videoInfo>) => {
+    let variants = switch info {
+    | Some(value) => value.variants
+    | None => []
+    }
+    if Js.Array.length(variants) == 0 {
+      ""
+    } else {
+      let best = Js.Array.reduce(maxBitrate, {bitrate: 0., url: ""}, variants)
+      let duration_millis = switch info {
+      | Some(value) =>
+        switch value.duration_millis {
+        | Some(value) => value
+        | None => 0.
+        }
       | None => 0.
       }
-    | None => 0.
+      let duration = j`$duration_millis ms`
+      `<a href="${best.url}">${duration}${"</a>"}`
     }
-    let duration = j`$duration_millis ms`
-    `<a href="${best.url}">${duration}${"</a>"}`
   }
-}
 
-let getImage = image => {
-  let size = image.sizes.small
-  let width = size.w /. 2.
-  let height = size.h /. 2.
-  let small = image.media_url ++ ":small"
-  let large = image.media_url ++ ":large"
-  let img = j`<img src="${small}" width="$width" height="$height" />`
-  let duration = getVideoLink(image.video_info)
-  `<a href="${large}">${img}${"</a>"}${duration}`
-}
-
-let isPhoto = img => {
-  img.\"type" == "photo" || img.\"type" == "video" || img.\"type" == "animated_gif"
-}
-
-let getImages = d => {
-  switch d.extended_entities {
-  | Some(value) =>
-    Js.Array.filter(isPhoto, value.media) |> Js.Array.map(getImage) |> Js.Array.joinWith("")
-  | None => ""
+  let getImage = image => {
+    let size = image.sizes.small
+    let width = size.w /. 2.
+    let height = size.h /. 2.
+    let small = image.media_url ++ ":small"
+    let large = image.media_url ++ ":large"
+    let img = j`<img src="${small}" width="$width" height="$height" />`
+    let duration = getVideoLink(image.video_info)
+    `<a href="${large}">${img}${"</a>"}${duration}`
   }
+
+  let isPhoto = img => {
+    img.\"type" == "photo" || img.\"type" == "video" || img.\"type" == "animated_gif"
+  }
+
+  let getImages = d => {
+    switch d.extended_entities {
+    | Some(value) =>
+      Js.Array.filter(isPhoto, value.media) |> Js.Array.map(getImage) |> Js.Array.joinWith("")
+    | None => ""
+    }
+  }
+
+  let retweet = tweet.retweeted_status
+
+  let time = Js.String.substrAtMost(~from=8, ~length=8, tweet.created_at)
+  let user = getUser(retweet, tweet)
+  let t = switch retweet {
+  | Some(value) => value
+  | None => tweet
+  }
+  let image = getImages(t)
+
+  let a =
+    `<a href="https://twitter.com/${user}${"/status/"}${tweet.id_str}""" target="_blank">${time}${"</a>"}`
+  let i = getRetweeter(retweet, tweet)
+  let b = "<b>" ++ user ++ "</b>"
+  let text = getText(retweet, tweet)
+  let images = "<div>" ++ image ++ "</div>"
+  let quote = getQuote(t)
+
+  "<li>" ++ a ++ i ++ b ++ " " ++ text ++ " " ++ quote ++ " " ++ images ++ "</li>"
 }
-
-%%raw(
-  `
-export function renderTweet(tweet) {
-  const retweet = tweet.retweeted_status
-
-  const time = tweet.created_at ? tweet.created_at.substr(8, 8) : "When?"
-  const user = getUser(retweet, tweet)
-  const image = getImages(retweet || tweet)
-
-  const a =
-    '<a href="https://twitter.com/' +
-    user +
-    "/status/" +
-    tweet.id_str +
-    '""" target="_blank">' +
-    time +
-    "</a>"
-  const i = getRetweeter(retweet, tweet)
-  const b = "<b>" + user + "</b>"
-  const text = getText(retweet, tweet)
-  const images = image && "<div>" + image + "</div>"
-  const quote = getQuote(retweet || tweet)
-
-  return "<li>" + a + i + b + " " + text + " " + quote + " " + images + "</li>"
-}
-`
-)
