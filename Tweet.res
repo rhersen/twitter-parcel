@@ -68,7 +68,7 @@ let renderTweet = tweet => {
       if Js.Array.length(variants) == 0 {
         ""
       } else {
-        let best = Js.Array.reduce(maxBitrate, {bitrate: 0., url: ""}, variants)
+        let best = Js.Array.reduce(maxBitrate, {bitrate: -0.1, url: ""}, variants)
         let duration_millis = switch info {
         | Some(value) =>
           switch value.duration_millis {
