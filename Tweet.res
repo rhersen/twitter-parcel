@@ -57,22 +57,22 @@ let renderTweet = tweet => {
 
     let getVideoLink = (info: option<videoInfo>) => {
       let variants = switch info {
-      | Some(value) => value.variants
+      | Some({variants}) => variants
       | None => []
       }
       if Js.Array.length(variants) == 0 {
         ""
       } else {
         let best = Js.Array.reduce(maxBitrate, {bitrate: -0.1, url: ""}, variants)
-        let duration_millis = switch info {
-        | Some(value) =>
-          switch value.duration_millis {
+        let millis = switch info {
+        | Some({duration_millis}) =>
+          switch duration_millis {
           | Some(value) => value
           | None => 0.
           }
         | None => 0.
         }
-        let duration = j`$duration_millis ms`
+        let duration = j`$millis ms`
         `<a href="${best.url}">${duration}${"</a>"}`
       }
     }
@@ -89,15 +89,15 @@ let renderTweet = tweet => {
     }
 
     switch d.extended_entities {
-    | Some(value) =>
-      Js.Array.filter(isPhoto, value.media) |> Js.Array.map(getImage) |> Js.Array.joinWith("")
+    | Some({media}) =>
+      Js.Array.filter(isPhoto, media) |> Js.Array.map(getImage) |> Js.Array.joinWith("")
     | None => ""
     }
   }
 
   let getUser = (retweet, d) =>
     switch retweet {
-    | Some(value) => value.user.screen_name
+    | Some({user}) => user.screen_name
     | None => d.user.screen_name
     }
 
