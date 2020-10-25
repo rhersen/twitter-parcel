@@ -53,12 +53,7 @@ let renderTweet = tweet => {
       img.\"type" == "photo" || img.\"type" == "video" || img.\"type" == "animated_gif"
     }
 
-    let maxBitrate = (prev, cur) =>
-      if cur.bitrate > prev.bitrate {
-        cur
-      } else {
-        prev
-      }
+    let maxBitrate = (prev, cur) => cur.bitrate > prev.bitrate ? cur : prev
 
     let getVideoLink = (info: option<videoInfo>) => {
       let variants = switch info {
@@ -108,7 +103,7 @@ let renderTweet = tweet => {
 
   let getRetweeter = (retweet, d) => {
     switch retweet {
-    | Some(status) => ` <i>${d.user.screen_name}</i> `
+    | Some(_) => ` <i>${d.user.screen_name}</i> `
     | None => " "
     }
   }
