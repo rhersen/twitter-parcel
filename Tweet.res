@@ -86,8 +86,8 @@ let renderTweet = tweet => {
       let size = image.sizes.small
       let width = size.w /. 2.
       let height = size.h /. 2.
-      let small = image.media_url ++ ":small"
-      let large = image.media_url ++ ":large"
+      let small = `${image.media_url}:small`
+      let large = `${image.media_url}:large`
       let img = j`<img src="${small}" width="$width" height="$height" />`
       let duration = getVideoLink(image.video_info)
       `<a href="${large}">${img}${"</a>"}${duration}`
@@ -108,7 +108,7 @@ let renderTweet = tweet => {
 
   let getRetweeter = (retweet, d) => {
     switch retweet {
-    | Some(status) => " <i>" ++ d.user.screen_name ++ "</i> "
+    | Some(status) => ` <i>${d.user.screen_name}</i> `
     | None => " "
     }
   }
@@ -119,7 +119,11 @@ let renderTweet = tweet => {
 
   let getText = (retweetStatus, tweetStatus) => {
     let replaceUrlWithLink = (text, url) => {
-      Js.String.replace(url.url, `<a href="${url.url}" target="_blank">${url.display_url}${"</a>"}`, text)
+      Js.String.replace(
+        url.url,
+        `<a href="${url.url}" target="_blank">${url.display_url}${"</a>"}`,
+        text,
+      )
     }
 
     let data = switch retweetStatus {
@@ -149,10 +153,10 @@ let renderTweet = tweet => {
   let a =
     `<a href="https://twitter.com/${user}${"/status/"}${tweet.id_str}""" target="_blank">${time}${"</a>"}`
   let i = getRetweeter(retweet, tweet)
-  let b = "<b>" ++ user ++ "</b>"
+  let b = `<b>${user}</b>`
   let text = getText(retweet, tweet)
-  let images = "<div>" ++ image ++ "</div>"
+  let images = `<div>${image}</div>`
   let quote = getQuote(t)
 
-  "<li>" ++ a ++ i ++ b ++ " " ++ text ++ " " ++ quote ++ " " ++ images ++ "</li>"
+  `<li>${a}${i}${b} ${text} ${quote} ${images}</li>`
 }
