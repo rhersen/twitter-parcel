@@ -1,10 +1,12 @@
+@bs.val external document: 'a = "document"
+
+let setStatus = s => {
+  document["getElementById"]("status")["innerHTML"] = s
+}
+
 %%raw(`
 import { getUsers } from "./Users.bs.js"
 import { renderTweet } from "./Tweet.bs.js"
-
-let setStatus = s => {
-  document.getElementById("status").innerHTML = s
-}
 
 let addEventListener = a => {
   a.addEventListener("click", window.mark)
