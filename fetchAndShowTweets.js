@@ -9,7 +9,7 @@ let addEventListener = a => {
   a.addEventListener("click", window.mark)
 }
 
-let setErrorStatus = s => setStatus(`twitter GET error: ${s}`)
+let setErrorStatus = s => setStatus("twitter GET error: " + s)
 
 export let fetchAndShowTweets = (id_str, tweets) => {
   let handleJson = tweetJson => {
@@ -20,15 +20,17 @@ export let fetchAndShowTweets = (id_str, tweets) => {
       tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
       tweets.insertAdjacentHTML(
         "afterbegin",
-        `<div class="stats"><span class="countdown" onclick='mark("${
-          tweet.id_str
-        }")'>${++i}</span><hr /></div>`
+        '<div class="stats"><span class="countdown" onclick=\'mark("' +
+          tweet.id_str +
+          "\")'>" +
+          ++i +
+          "</span><hr /></div>"
       )
     }
 
     let insertUsers = key => {
       if (users[key] > 4) {
-        return `<tr><td>${key}</td><td>${users[key]}</td></tr>`
+        return "<tr><td>" + key + "</td><td>" + users[key] + "</td></tr>"
       }
     }
 
@@ -36,9 +38,11 @@ export let fetchAndShowTweets = (id_str, tweets) => {
 
     tweets.insertAdjacentHTML(
       "afterbegin",
-      `<table>${Object.keys(users)
-        .map(insertUsers)
-        .join("")}</table>`
+      "<table>" +
+        Object.keys(users)
+          .map(insertUsers)
+          .join("") +
+        "</table>"
     )
 
     setStatus("addEventListener")
@@ -56,5 +60,5 @@ export let fetchAndShowTweets = (id_str, tweets) => {
     }
   }
 
-  fetch(`/.netlify/functions/twitter?since_id=${id_str}`).then(handleFetch)
+  fetch("/.netlify/functions/twitter?since_id=" + id_str).then(handleFetch)
 }
