@@ -1,3 +1,4 @@
+%%raw(`
 import { getUsers } from "./Users.bs.js"
 import { renderTweet } from "./Tweet.bs.js"
 
@@ -65,3 +66,4 @@ export let fetchAndShowTweets = (id_str, tweets) => {
 
   fetch("/.netlify/functions/twitter?since_id=" + id_str).then(handleFetch)
 }
+`)
