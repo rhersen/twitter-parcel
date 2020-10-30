@@ -6,18 +6,18 @@ let setStatus = s => {
 
 let setErrorStatus = s => setStatus("twitter GET error: " ++ s)
 
-let renderTweets = (tweets, . tweet, i) => {
+let renderTweets = (tweets, . tweet, i: int) => {
   tweets["insertAdjacentHTML"]("afterbegin", Tweet.renderTweet(tweet))
   tweets["insertAdjacentHTML"](
     "afterbegin",
-    `<div class="stats"><span class="countdown" onclick='mark("${tweet.id_str}")'>${i}</span><hr /></div>`,
+    j`<div class="stats"><span class="countdown" onclick='mark("${tweet.id_str}")'>$i</span><hr /></div>`,
   )
 }
 
-let insertUsers = (users, . key) => {
-  let user = Js.Dict.unsafeGet(users, key)
-  user > 3
-    ? j`<tr><td>$key</td><td>$user</td></tr>`
+let insertUsers = (users, . screenName) => {
+  let tweetCount = Js.Dict.unsafeGet(users, screenName)
+  tweetCount > 4
+    ? j`<tr><td>$screenName</td><td>$tweetCount</td></tr>`
     : ""
 }
 
