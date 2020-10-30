@@ -6,29 +6,23 @@ let setStatus = s => {
 
 let setErrorStatus = s => setStatus("twitter GET error: " ++ s)
 
-let renderTweets = tweets => (. tweet, i) => {
+let renderTweets = (tweets, . tweet, i) => {
   tweets["insertAdjacentHTML"]("afterbegin", Tweet.renderTweet(tweet))
   tweets["insertAdjacentHTML"](
     "afterbegin",
-    `<div class="stats"><span class="countdown" ` ++
-      "onclick='mark" ++
-      `("` ++
-      tweet.id_str ++
-      `")` ++
-      "'>" ++
-      i ++
-      "</span><hr /></div>"
+    `<div class="stats"><span class="countdown" onclick='mark("${tweet.id_str}")'>${i}</span><hr /></div>`,
   )
+}
+
+let insertUsers = (users, . key) => {
+  let user = Js.Dict.unsafeGet(users, key)
+  user > 3
+    ? j`<tr><td>$key</td><td>$user</td></tr>`
+    : ""
 }
 
 %%raw(`
 import { getUsers } from "./Users.bs.js"
-
-let insertUsers = users => key => {
-  if (users[key] > 4) {
-    return "<tr><td>" + key + "</td><td>" + users[key] + "</td></tr>"
-  }
-}
 
 let handleJson = tweets => tweetJson => {
   let users = getUsers(tweetJson)
