@@ -6,7 +6,7 @@ let setStatus = s => {
 
 let setErrorStatus = s => setStatus("twitter GET error: " ++ s)
 
-let renderTweets = (tweets, . tweet, i: int) => {
+let renderTweets = (tweets, tweet, i) => {
   tweets["insertAdjacentHTML"]("afterbegin", Tweet.renderTweet(tweet))
   tweets["insertAdjacentHTML"](
     "afterbegin",
@@ -14,32 +14,27 @@ let renderTweets = (tweets, . tweet, i: int) => {
   )
 }
 
-let insertUsers = (users, . screenName) => {
+let insertUsers = (users, screenName) => {
   let tweetCount = Js.Dict.unsafeGet(users, screenName)
-  tweetCount > 4
-    ? j`<tr><td>$screenName</td><td>$tweetCount</td></tr>`
-    : ""
+  tweetCount > 4 ? j`<tr><td>$screenName</td><td>$tweetCount</td></tr>` : ""
 }
 
-%%raw(`
-import { getUsers } from "./Users.bs.js"
+let handleJson = (tweets, . tweetJson: array<Tweet.status>) => {
+  let users = Users.getUsers(tweetJson)
 
-let handleJson = tweets => tweetJson => {
-  let users = getUsers(tweetJson)
+  Js.Array.forEachi(renderTweets(tweets), tweetJson)
 
-  tweetJson.forEach(renderTweets(tweets))
-
-  tweets.insertAdjacentHTML(
+  tweets["insertAdjacentHTML"](
     "afterbegin",
-    "<table>" +
-      Object.keys(users)
-        .map(insertUsers(users))
-        .join("") +
-      "</table>"
+    "<table>" ++
+    Js.Array.joinWith("", Js.Array.map(insertUsers(users), Js.Dict.keys(users))) ++ "</table>",
   )
 
   setStatus("twitter GET OK")
 }
+
+%%raw(
+  `
 
 let handleFetch = tweets => tweetResp => {
   if (tweetResp.ok) {
@@ -54,4 +49,5 @@ let handleFetch = tweets => tweetResp => {
 export let fetchAndShowTweets = (id_str, tweets) => {
   fetch("/.netlify/functions/twitter?since_id=" + id_str).then(handleFetch(tweets))
 }
-`)
+`
+)
