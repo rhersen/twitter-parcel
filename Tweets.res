@@ -16,10 +16,10 @@ let renderTweets = (tweets, tweet, i) => {
 
 let insertUsers = (users, screenName) => {
   let tweetCount = Js.Dict.unsafeGet(users, screenName)
-  tweetCount > 4 ? j`<tr><td>$screenName</td><td>$tweetCount</td></tr>` : ""
+  tweetCount > 3 ? j`<tr><td>$screenName</td><td>$tweetCount</td></tr>` : ""
 }
 
-let handleJson = (tweets, . tweetJson: array<Tweet.status>) => {
+let handleJson = (tweets, tweetJson: array<Tweet.status>) => {
   let users = Users.getUsers(tweetJson)
 
   Js.Array.forEachi(renderTweets(tweets), tweetJson)
@@ -33,18 +33,21 @@ let handleJson = (tweets, . tweetJson: array<Tweet.status>) => {
   setStatus("twitter GET OK")
 }
 
-%%raw(
-  `
-
-let handleFetch = tweets => tweetResp => {
-  if (tweetResp.ok) {
+let handleFetch = (tweets, . tweetResp) => {
+  if tweetResp["ok"] {
     setStatus("insertAdjacentHTML")
 
-    tweetResp.json().then(handleJson(tweets))
+    tweetResp["json"]()->Js.Promise.then_(
+      tweetJson => Js.Promise.resolve(handleJson(tweets, tweetJson)),
+      _,
+    )
   } else {
-    tweetResp.text().then(setErrorStatus)
+    tweetResp["text"]()->Js.Promise.then_(s => Js.Promise.resolve(setErrorStatus(s)), _)
   }
 }
+
+%%raw(
+  `
 
 export let fetchAndShowTweets = (id_str, tweets) => {
   fetch("/.netlify/functions/twitter?since_id=" + id_str).then(handleFetch(tweets))
