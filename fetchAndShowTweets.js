@@ -1,61 +1,69 @@
 import { getUsers } from "./Users.bs.js"
 import { renderTweet } from "./Tweet.bs.js"
 
-let setStatus = s => {
+function setStatus(s) {
   document.getElementById("status").innerHTML = s
 }
 
-let setErrorStatus = s => setStatus("twitter GET error: " + s)
-
-let renderTweets = tweets => (tweet, i) => {
-  tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
-  tweets.insertAdjacentHTML(
-    "afterbegin",
-    '<div class="stats"><span class="countdown" ' +
-      "onclick='mark" +
-      '("' +
-      tweet.id_str +
-      '")' +
-      "'>" +
-      ++i +
-      "</span><hr /></div>"
-  )
+function addEventListener(a) {
+  a.addEventListener("click", window.mark)
 }
 
-let insertUsers = users => key =>
-  users[key] > 4
-    ? "<tr><td>" + key + "</td><td>" + users[key] + "</td></tr>"
-    : ""
+function setErrorStatus(s) {
+  return setStatus("twitter GET error: " + s)
+}
 
-let handleJson = tweets => tweetJson => {
-  let users = getUsers(tweetJson)
+export function fetchAndShowTweets(id_str, tweets) {
+  function handleJson(tweetJson) {
+    let users = getUsers(tweetJson)
+    let i = 0
 
-  tweetJson.forEach(renderTweets(tweets))
+    function renderTweets(tweet) {
+      tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
+      tweets.insertAdjacentHTML(
+        "afterbegin",
+        "<div class=\"stats\"><span class=\"countdown\" " +
+        "onclick='mark" +
+        "(\"" +
+        tweet.id_str +
+        "\")" +
+        "'>" +
+        ++i +
+        "</span><hr /></div>"
+      )
+    }
 
-  tweets.insertAdjacentHTML(
-    "afterbegin",
-    "<table>" +
+    function insertUsers(key) {
+      if (users[key] > 4) {
+        return "<tr><td>" + key + "</td><td>" + users[key] + "</td></tr>"
+      }
+    }
+
+    tweetJson.forEach(renderTweets)
+
+    tweets.insertAdjacentHTML(
+      "afterbegin",
+      "<table>" +
       Object.keys(users)
-        .map(insertUsers(users))
+        .map(insertUsers)
         .join("") +
       "</table>"
-  )
+    )
 
-  setStatus("twitter GET OK")
-}
-
-let handleFetch = tweets => tweetResp => {
-  if (tweetResp.ok) {
-    setStatus("insertAdjacentHTML")
-
-    tweetResp.json().then(handleJson(tweets))
-  } else {
-    tweetResp.text().then(setErrorStatus)
+    setStatus("addEventListener")
+    tweets.querySelectorAll("a.mark").forEach(addEventListener)
+    setStatus("twitter GET OK")
   }
-}
 
-export let fetchAndShowTweets = (id_str, tweets) => {
-  fetch("/.netlify/functions/twitter?since_id=" + id_str).then(
-    handleFetch(tweets)
-  )
+  function handleFetch(tweetResp) {
+    if (tweetResp.ok) {
+      setStatus("insertAdjacentHTML")
+
+      tweetResp.json().then(handleJson)
+    } else {
+      tweetResp.text().then(setErrorStatus)
+    }
+  }
+
+  fetch("/.netlify/functions/twitter?since_id=" + id_str).then(handleFetch)
 }

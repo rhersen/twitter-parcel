@@ -1,8 +1,6 @@
 @bs.val external document: 'a = "document"
 
-let setStatus = s => {
-  document["getElementById"]("status")["innerHTML"] = s
-}
+let setStatus = s => document["getElementById"]("status")["innerHTML"] = s
 
 let setErrorStatus = s => setStatus("twitter GET error: " ++ s)
 
@@ -33,7 +31,7 @@ let handleJson = (tweets, tweetJson: array<Tweet.status>) => {
   setStatus("twitter GET OK")
 }
 
-let handleFetch = (tweets, . tweetResp) => {
+let handleFetch = (tweets, tweetResp) => {
   if tweetResp["ok"] {
     setStatus("insertAdjacentHTML")
 
@@ -46,11 +44,10 @@ let handleFetch = (tweets, . tweetResp) => {
   }
 }
 
-%%raw(
-  `
+let since = %raw(`s => fetch("/.netlify/functions/twitter?since_id=" + s)`)
 
-export let fetchAndShowTweets = (id_str, tweets) => {
-  fetch("/.netlify/functions/twitter?since_id=" + id_str).then(handleFetch(tweets))
-}
-`
-)
+let fetchAndShowTweets = (id_str, tweets) =>
+  since(id_str)->Js.Promise.then_(
+    tweetResp => Js.Promise.resolve(handleFetch(tweets, tweetResp)),
+    _,
+  )
