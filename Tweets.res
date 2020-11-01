@@ -1,53 +1,51 @@
 @bs.val external document: 'a = "document"
 
-let setStatus = s => document["getElementById"]("status")["innerHTML"] = s
+let fetchAndShowTweets = (id_str, tweets) => {
+  let setStatus = s => document["getElementById"]("status")["innerHTML"] = s
 
-let setErrorStatus = s => setStatus("twitter GET error: " ++ s)
+  let setErrorStatus = s => setStatus("twitter GET error: " ++ s)
 
-let renderTweets = (tweets, tweet, i) => {
-  tweets["insertAdjacentHTML"]("afterbegin", Tweet.renderTweet(tweet))
-  tweets["insertAdjacentHTML"](
-    "afterbegin",
-    j`<div class="stats"><span class="countdown" onclick='mark("${tweet.id_str}")'>$i</span><hr /></div>`,
-  )
-}
+  let since = %raw(`s => fetch("/.netlify/functions/twitter?since_id=" + s)`)
 
-let insertUsers = (users, screenName) => {
-  let tweetCount = Js.Dict.unsafeGet(users, screenName)
-  tweetCount > 3 ? j`<tr><td>$screenName</td><td>$tweetCount</td></tr>` : ""
-}
+  let handleJson = (tweetJson: array<Tweet.status>) => {
+    let users = Users.getUsers(tweetJson)
 
-let handleJson = (tweets, tweetJson: array<Tweet.status>) => {
-  let users = Users.getUsers(tweetJson)
+    let renderTweets = (tweet, i) => {
+      tweets["insertAdjacentHTML"]("afterbegin", Tweet.renderTweet(tweet))
+      tweets["insertAdjacentHTML"](
+        "afterbegin",
+        j`<div class="stats"><span class="countdown" onclick='mark("${tweet.id_str}")'>$i</span><hr /></div>`,
+      )
+    }
 
-  Js.Array.forEachi(renderTweets(tweets), tweetJson)
+    let insertUsers = (users, screenName) => {
+      let tweetCount = Js.Dict.unsafeGet(users, screenName)
+      tweetCount > 4 ? j`<tr><td>$screenName</td><td>$tweetCount</td></tr>` : ""
+    }
 
-  tweets["insertAdjacentHTML"](
-    "afterbegin",
-    "<table>" ++
-    Js.Array.joinWith("", Js.Array.map(insertUsers(users), Js.Dict.keys(users))) ++ "</table>",
-  )
+    Js.Array.forEachi(renderTweets, tweetJson)
 
-  setStatus("twitter GET OK")
-}
-
-let handleFetch = (tweets, tweetResp) => {
-  if tweetResp["ok"] {
-    setStatus("insertAdjacentHTML")
-
-    tweetResp["json"]()->Js.Promise.then_(
-      tweetJson => Js.Promise.resolve(handleJson(tweets, tweetJson)),
-      _,
+    tweets["insertAdjacentHTML"](
+      "afterbegin",
+      "<table>" ++
+      Js.Array.joinWith("", Js.Array.map(insertUsers(users), Js.Dict.keys(users))) ++ "</table>",
     )
-  } else {
-    tweetResp["text"]()->Js.Promise.then_(s => Js.Promise.resolve(setErrorStatus(s)), _)
+
+    setStatus("twitter GET OK")
   }
+
+  let handleFetch = tweetResp => {
+    if tweetResp["ok"] {
+      setStatus("insertAdjacentHTML")
+
+      tweetResp["json"]()->Js.Promise.then_(
+        tweetJson => Js.Promise.resolve(handleJson(tweetJson)),
+        _,
+      )
+    } else {
+      tweetResp["text"]()->Js.Promise.then_(s => Js.Promise.resolve(setErrorStatus(s)), _)
+    }
+  }
+
+  since(id_str)->Js.Promise.then_(tweetResp => Js.Promise.resolve(handleFetch(tweetResp)), _)
 }
-
-let since = %raw(`s => fetch("/.netlify/functions/twitter?since_id=" + s)`)
-
-let fetchAndShowTweets = (id_str, tweets) =>
-  since(id_str)->Js.Promise.then_(
-    tweetResp => Js.Promise.resolve(handleFetch(tweets, tweetResp)),
-    _,
-  )

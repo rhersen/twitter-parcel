@@ -14,11 +14,11 @@ function setErrorStatus(s) {
 }
 
 export function fetchAndShowTweets(id_str, tweets) {
-  function handleJson(tweetJson) {
+  var handleJson = function (tweetJson) {
     let users = getUsers(tweetJson)
     let i = 0
 
-    function renderTweets(tweet) {
+    var renderTweets = function (tweet) {
       tweets.insertAdjacentHTML("afterbegin", renderTweet(tweet))
       tweets.insertAdjacentHTML(
         "afterbegin",
@@ -33,7 +33,7 @@ export function fetchAndShowTweets(id_str, tweets) {
       )
     }
 
-    function insertUsers(key) {
+    var insertUsers = function (key) {
       if (users[key] > 4) {
         return "<tr><td>" + key + "</td><td>" + users[key] + "</td></tr>"
       }
@@ -55,7 +55,7 @@ export function fetchAndShowTweets(id_str, tweets) {
     setStatus("twitter GET OK")
   }
 
-  function handleFetch(tweetResp) {
+  var handleFetch = function (tweetResp) {
     if (tweetResp.ok) {
       setStatus("insertAdjacentHTML")
 
