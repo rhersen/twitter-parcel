@@ -1,56 +1,45 @@
 import { fetchAndShowTweets } from "./Tweets.bs.js"
 
-iife().then(
-  () => {
-    console.log("done")
-  },
-  () => {
-    console.log("fail")
-  }
-)
-
-async function iife() {
-  setStatus("fauna GET")
-  const faunaResp = await fetch(`/.netlify/functions/fauna`)
-
-  if (!faunaResp.ok) {
-    setStatus(`fauna GET error: ${await faunaResp.text()}`)
-    return
-  }
-
-  const { id_str } = await faunaResp.json()
-  setStatus("twitter GET")
-
-  try {
-    await fetchAndShowTweets(id_str, document.getElementById("tweets"))
-  } catch (e) {
-    console.error(e)
-  }
+function setStatus(s) {
+  document.getElementById("status").innerHTML = s
 }
 
-window.mark = async function mark(id_str) {
+setStatus("fauna GET")
+fetch(`/.netlify/functions/fauna`).then(faunaResp => {
+  if (!faunaResp.ok) {
+    faunaResp.text().then(text => {
+      setStatus(`fauna GET error: ${text}`)
+    })
+  } else
+    faunaResp.json().then(({ id_str }) => {
+      setStatus("twitter GET")
+      fetchAndShowTweets(id_str, document.getElementById("tweets")).then(
+        () => {
+          console.log("done")
+        },
+        () => {
+          console.log("fail")
+        }
+      )
+    })
+})
+
+window.mark = function mark(id_str) {
   console.log("mark", id_str)
 
   setStatus("twitter GET")
   const tweets = document.getElementById("tweets")
   tweets.innerHTML = ""
-
-  try {
-    await fetchAndShowTweets(id_str, tweets)
-  } catch (e) {
-    console.error(e)
-  }
-
-  setStatus("fauna PUT")
-  const faunaResp = await fetch(`/.netlify/functions/fauna`, {
-    method: "PUT",
-    body: id_str
+  fetchAndShowTweets(id_str, tweets).then(() => {
+    setStatus("fauna PUT")
+    fetch(`/.netlify/functions/fauna`, {
+      method: "PUT",
+      body: id_str
+    }).then(faunaResp => {
+      faunaResp.text().then(text => {
+        if (!faunaResp.ok) setStatus(`fauna PUT error: ${text}`)
+        else setStatus("fauna PUT OK")
+      })
+    })
   })
-
-  if (!faunaResp.ok) setStatus(`fauna PUT error: ${await faunaResp.text()}`)
-  else setStatus("fauna PUT OK")
-}
-
-function setStatus(s) {
-  document.getElementById("status").innerHTML = s
 }
