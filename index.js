@@ -1,8 +1,5 @@
 import { fetchAndShowTweets } from "./Tweets.bs.js"
-
-function setStatus(s) {
-  document.getElementById("status").innerHTML = s
-}
+import { set as setStatus } from "./Status.bs.js"
 
 setStatus("fauna GET")
 fetch(`/.netlify/functions/fauna`).then(faunaResp => {
@@ -24,7 +21,7 @@ fetch(`/.netlify/functions/fauna`).then(faunaResp => {
     })
 })
 
-window.mark = function mark(id_str) {
+function mark(id_str) {
   console.log("mark", id_str)
 
   setStatus("twitter GET")
@@ -43,3 +40,5 @@ window.mark = function mark(id_str) {
     })
   })
 }
+
+window.mark = mark

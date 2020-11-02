@@ -1,10 +1,4 @@
-@bs.val external document: 'a = "document"
-
 let fetchAndShowTweets = (id_str, tweets) => {
-  let setStatus = s => document["getElementById"]("status")["innerHTML"] = s
-
-  let setErrorStatus = s => setStatus("twitter GET error: " ++ s)
-
   let since = %raw(`s => fetch("/.netlify/functions/twitter?since_id=" + s)`)
 
   let handleJson = (tweetJson: array<Tweet.status>) => {
@@ -31,19 +25,22 @@ let fetchAndShowTweets = (id_str, tweets) => {
       Js.Array.joinWith("", Js.Array.map(insertUsers(users), Js.Dict.keys(users))) ++ "</table>",
     )
 
-    setStatus("twitter GET OK")
+    Status.set("twitter GET OK")
   }
 
   let handleFetch = tweetResp => {
     if tweetResp["ok"] {
-      setStatus("insertAdjacentHTML")
+      Status.set("insertAdjacentHTML")
 
       tweetResp["json"]()->Js.Promise.then_(
         tweetJson => Js.Promise.resolve(handleJson(tweetJson)),
         _,
       )
     } else {
-      tweetResp["text"]()->Js.Promise.then_(s => Js.Promise.resolve(setErrorStatus(s)), _)
+      tweetResp["text"]()->Js.Promise.then_(
+        s => Js.Promise.resolve(Status.set("twitter GET error: " ++ s)),
+        _,
+      )
     }
   }
 
