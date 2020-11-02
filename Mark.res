@@ -1,18 +1,19 @@
-let handleText = faunaResp => text => {
-  if (!faunaResp["ok"]) {
-    Status.set("fauna PUT error: " ++ text)
+let handleText = (faunaResp, text) => {
+  if !faunaResp["ok"] {
+    Js.Promise.resolve(Status.set("fauna PUT error: " ++ text))
   } else {
-    Status.set("fauna PUT OK")
+    Js.Promise.resolve(Status.set("fauna PUT OK"))
   }
 }
 
-%%raw(`
+let handleFaunaResponse = faunaResp => {
+  faunaResp["text"]()->Js.Promise.then_(handleText(faunaResp), _)
+}
+
+%%raw(
+  `
 import { set as setStatus } from "./Status.bs.js"
 import { fetchAndShowTweets } from "./Tweets.bs.js"
-
-let handleFaunaResponse = faunaResp => {
-  faunaResp.text().then(handleText(faunaResp))
-}
 
 let faunaPut = id_str => () => {
   setStatus("fauna PUT")
@@ -29,4 +30,5 @@ export function mark(id_str) {
   tweets.innerHTML = ""
   fetchAndShowTweets(id_str, tweets).then(faunaPut(id_str))
 }
-`)
+`
+)
