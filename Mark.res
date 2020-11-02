@@ -10,18 +10,17 @@ let handleFaunaResponse = faunaResp => {
   faunaResp["text"]()->Js.Promise.then_(handleText(faunaResp), _)
 }
 
+let put = %raw(`id_str => fetch("/.netlify/functions/fauna", { method: "PUT", body: id_str })`)
+
+let faunaPut = (id_str, ()) => {
+  Status.set("fauna PUT")
+  put(id_str)->Js.Promise.then_(handleFaunaResponse, _)
+}
+
 %%raw(
   `
 import { set as setStatus } from "./Status.bs.js"
 import { fetchAndShowTweets } from "./Tweets.bs.js"
-
-let faunaPut = id_str => () => {
-  setStatus("fauna PUT")
-  fetch("/.netlify/functions/fauna", {
-    method: "PUT",
-    body: id_str
-  }).then(handleFaunaResponse)
-}
 
 export function mark(id_str) {
   console.log("mark", id_str)
