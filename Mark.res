@@ -1,14 +1,14 @@
+let handleText = faunaResp => text => {
+  if (!faunaResp["ok"]) {
+    Status.set("fauna PUT error: " ++ text)
+  } else {
+    Status.set("fauna PUT OK")
+  }
+}
+
 %%raw(`
 import { set as setStatus } from "./Status.bs.js"
 import { fetchAndShowTweets } from "./Tweets.bs.js"
-
-let handleText = faunaResp => text => {
-  if (!faunaResp.ok) {
-    setStatus("fauna PUT error: " + text)
-  } else {
-    setStatus("fauna PUT OK")
-  }
-}
 
 let handleFaunaResponse = faunaResp => {
   faunaResp.text().then(handleText(faunaResp))
