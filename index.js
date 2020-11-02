@@ -1,6 +1,6 @@
 import { fetchAndShowTweets } from "./Tweets.bs.js"
 import { set as setStatus } from "./Status.bs.js"
-import { mark } from "./mark.js"
+import { mark } from "./Mark.bs.js"
 
 setStatus("fauna GET")
 fetch(`/.netlify/functions/fauna`).then(faunaResp => {

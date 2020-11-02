@@ -1,3 +1,4 @@
+%%raw(`
 import { set as setStatus } from "./Status.bs.js"
 import { fetchAndShowTweets } from "./Tweets.bs.js"
 
@@ -28,3 +29,4 @@ export function mark(id_str) {
   tweets.innerHTML = ""
   fetchAndShowTweets(id_str, tweets).then(faunaPut(id_str))
 }
+`)
