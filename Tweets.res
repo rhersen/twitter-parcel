@@ -25,17 +25,14 @@ let fetchAndShowTweets = (id_str, tweets) => {
       Js.Array.joinWith("", Js.Array.map(insertUsers(users), Js.Dict.keys(users))) ++ "</table>",
     )
 
-    Status.set("twitter GET OK")
+    Js.Promise.resolve(Status.set("twitter GET OK"))
   }
 
   let handleFetch = tweetResp => {
     if tweetResp["ok"] {
       Status.set("insertAdjacentHTML")
 
-      tweetResp["json"]()->Js.Promise.then_(
-        tweetJson => Js.Promise.resolve(handleJson(tweetJson)),
-        _,
-      )
+      tweetResp["json"]()->Js.Promise.then_(handleJson, _)
     } else {
       tweetResp["text"]()->Js.Promise.then_(
         s => Js.Promise.resolve(Status.set("twitter GET error: " ++ s)),
@@ -44,5 +41,5 @@ let fetchAndShowTweets = (id_str, tweets) => {
     }
   }
 
-  since(id_str)->Js.Promise.then_(tweetResp => Js.Promise.resolve(handleFetch(tweetResp)), _)
+  since(id_str)->Js.Promise.then_(handleFetch, _)
 }
