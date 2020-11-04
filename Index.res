@@ -1,14 +1,15 @@
-import { fetchAndShowTweets } from "./Tweets.bs.js"
-import { set as setStatus } from "./Status.bs.js"
-import { mark } from "./Mark.bs.js"
-
 let logDone = () => {
-  console.log("done")
+  Js.log("done")
 }
 
 let logFail = () => {
-  console.log("fail")
+  Js.log("fail")
 }
+
+%%raw(`
+import { fetchAndShowTweets } from "./Tweets.bs.js"
+import { set as setStatus } from "./Status.bs.js"
+import { mark } from "./Mark.bs.js"
 
 let twitterGet = ({ id_str }) => {
   setStatus("twitter GET")
@@ -34,3 +35,4 @@ setStatus("fauna GET")
 fetch("/.netlify/functions/fauna").then(handleFaunaResponse)
 
 window.mark = mark
+`)
