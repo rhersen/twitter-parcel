@@ -1,23 +1,22 @@
+@bs.val external document: 'a = "document"
+
 let logDone = () => {
-  Js.log("done")
+  Js.Promise.resolve(Js.log("done"))
 }
 
-let logFail = () => {
-  Js.log("fail")
+let twitterGet = json => {
+  Status.set("twitter GET")
+  Tweets.fetchAndShowTweets(json["id_str"], document["getElementById"]("tweets"))->Js.Promise.then_(
+    logDone,
+    _,
+  )
 }
 
-%%raw(`
+%%raw(
+  `
 import { fetchAndShowTweets } from "./Tweets.bs.js"
 import { set as setStatus } from "./Status.bs.js"
 import { mark } from "./Mark.bs.js"
-
-let twitterGet = ({ id_str }) => {
-  setStatus("twitter GET")
-  fetchAndShowTweets(id_str, document.getElementById("tweets")).then(
-    logDone,
-    logFail
-  )
-}
 
 let faunaGetError = text => {
   setStatus("fauna GET error: " + text)
@@ -35,4 +34,5 @@ setStatus("fauna GET")
 fetch("/.netlify/functions/fauna").then(handleFaunaResponse)
 
 window.mark = mark
-`)
+`
+)
