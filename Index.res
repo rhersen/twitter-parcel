@@ -12,15 +12,15 @@ let twitterGet = json => {
   )
 }
 
+let faunaGetError = text => {
+  Status.set("fauna GET error: " ++ text)
+}
+
 %%raw(
   `
 import { fetchAndShowTweets } from "./Tweets.bs.js"
 import { set as setStatus } from "./Status.bs.js"
 import { mark } from "./Mark.bs.js"
-
-let faunaGetError = text => {
-  setStatus("fauna GET error: " + text)
-}
 
 let handleFaunaResponse = faunaResp => {
   if (faunaResp.ok) {
