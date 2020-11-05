@@ -1,10 +1,11 @@
 @bs.val external document: 'a = "document"
 
-let faunaFetch = %raw(`fetch("/.netlify/functions/fauna")`)
+let faunaGet = %raw(`fetch("/.netlify/functions/fauna")`)
+let faunaPut = %raw(`id_str => fetch("/.netlify/functions/fauna", { method: "PUT", body: id_str })`)
 
 Status.set("fauna GET")
 
-faunaFetch->Js.Promise.then_(faunaResp =>
+faunaGet->Js.Promise.then_(faunaResp =>
   if faunaResp["ok"] {
     faunaResp["json"]()->Js.Promise.then_(json => {
       Status.set("twitter GET")
@@ -21,4 +22,25 @@ faunaFetch->Js.Promise.then_(faunaResp =>
   }
 , _)
 
-%%raw(` import { mark } from "./Mark.bs.js"; window.mark = mark `)
+let mark = id_str => {
+  Js.log("mark" ++ id_str)
+  Status.set("twitter GET")
+  let tweets = document["getElementById"]("tweets")
+  tweets["innerHTML"] = ""
+  Tweets.fetchAndShowTweets(id_str, tweets)->Js.Promise.then_(() => {
+    Status.set("fauna PUT")
+    faunaPut(id_str)->Js.Promise.then_(
+      faunaResp =>
+        faunaResp["text"]()->Js.Promise.then_(
+          text =>
+            Js.Promise.resolve(
+              Status.set(faunaResp["ok"] ? "fauna PUT OK" : "fauna PUT error: " ++ text),
+            ),
+          _,
+        ),
+      _,
+    )
+  }, _)
+}
+
+%%raw(`window.mark = mark`)

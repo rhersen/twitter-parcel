@@ -1,6 +1,6 @@
 import { fetchAndShowTweets } from "./Tweets.bs.js"
 import { set as setStatus } from "./Status.bs.js"
-import { mark } from "./Mark.bs.js"
+import { mark } from "./mark"
 
 let logDone = () => {
   console.log("done")
