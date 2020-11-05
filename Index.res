@@ -24,14 +24,9 @@ let handleFaunaResponse = faunaResp => {
   }
 }
 
-%%raw(
-  `
-import { set as setStatus } from "./Status.bs.js"
-import { mark } from "./Mark.bs.js"
+let faunaFetch = %raw(`fetch("/.netlify/functions/fauna")`)
 
-setStatus("fauna GET")
-fetch("/.netlify/functions/fauna").then(handleFaunaResponse)
+Status.set("fauna GET")
+faunaFetch->Js.Promise.then_(handleFaunaResponse,_)
 
-window.mark = mark
-`
-)
+%%raw( ` import { mark } from "./Mark.bs.js"; window.mark = mark ` )
