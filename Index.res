@@ -13,22 +13,21 @@ let twitterGet = json => {
 }
 
 let faunaGetError = text => {
-  Status.set("fauna GET error: " ++ text)
+  Js.Promise.resolve(Status.set("fauna GET error: " ++ text))
+}
+
+let handleFaunaResponse = faunaResp => {
+  if (faunaResp["ok"]) {
+    faunaResp["json"]()->Js.Promise.then_(twitterGet,_)
+  } else {
+    faunaResp["text"]()->Js.Promise.then_(faunaGetError,_)
+  }
 }
 
 %%raw(
   `
-import { fetchAndShowTweets } from "./Tweets.bs.js"
 import { set as setStatus } from "./Status.bs.js"
 import { mark } from "./Mark.bs.js"
-
-let handleFaunaResponse = faunaResp => {
-  if (faunaResp.ok) {
-    faunaResp.json().then(twitterGet)
-  } else {
-    faunaResp.text().then(faunaGetError)
-  }
-}
 
 setStatus("fauna GET")
 fetch("/.netlify/functions/fauna").then(handleFaunaResponse)
