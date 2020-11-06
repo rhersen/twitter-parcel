@@ -90,7 +90,7 @@ let renderTweet = tweet => {
 
     switch d.extended_entities {
     | Some({media}) =>
-      Js.Array.filter(isPhoto, media) |> Js.Array.map(getImage) |> Js.Array.joinWith("")
+      Js.Array.joinWith("", Js.Array.map(getImage, Js.Array.filter(isPhoto, media)))
     | None => ""
     }
   }
