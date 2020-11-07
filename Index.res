@@ -5,42 +5,42 @@ let faunaPut = %raw(`id_str => fetch("/.netlify/functions/fauna", { method: "PUT
 
 Status.set("fauna GET")
 
-faunaGet->Js.Promise.then_(faunaResp =>
+Js.Promise.then_(faunaResp =>
   if faunaResp["ok"] {
-    faunaResp["json"]()->Js.Promise.then_(json => {
+    Js.Promise.then_(json => {
       Status.set("twitter GET")
-      Tweets.fetchAndShowTweets(
-        json["id_str"],
-        document["getElementById"]("tweets"),
-      )->Js.Promise.then_(() => Js.Promise.resolve(Js.log("done")), _)
-    }, _)
+      Js.Promise.then_(
+        () => Js.Promise.resolve(Js.log("done")),
+        Tweets.fetchAndShowTweets(json["id_str"], document["getElementById"]("tweets")),
+      )
+    }, faunaResp["json"]())
   } else {
-    faunaResp["text"]()->Js.Promise.then_(
+    Js.Promise.then_(
       text => Js.Promise.resolve(Status.set("fauna GET error: " ++ text)),
-      _,
+      faunaResp["text"](),
     )
   }
-, _)
+, faunaGet)
 
 let mark = id_str => {
   Js.log("mark" ++ id_str)
   Status.set("twitter GET")
   let tweets = document["getElementById"]("tweets")
   tweets["innerHTML"] = ""
-  Tweets.fetchAndShowTweets(id_str, tweets)->Js.Promise.then_(() => {
+  Js.Promise.then_(() => {
     Status.set("fauna PUT")
-    faunaPut(id_str)->Js.Promise.then_(
+    Js.Promise.then_(
       faunaResp =>
-        faunaResp["text"]()->Js.Promise.then_(
+        Js.Promise.then_(
           text =>
             Js.Promise.resolve(
               Status.set(faunaResp["ok"] ? "fauna PUT OK" : "fauna PUT error: " ++ text),
             ),
-          _,
+          faunaResp["text"](),
         ),
-      _,
+      faunaPut(id_str),
     )
-  }, _)
+  }, Tweets.fetchAndShowTweets(id_str, tweets))
 }
 
 %%raw(`window.mark = mark`)

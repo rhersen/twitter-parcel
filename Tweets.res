@@ -32,14 +32,14 @@ let fetchAndShowTweets = (id_str, tweets) => {
     if tweetResp["ok"] {
       Status.set("insertAdjacentHTML")
 
-      tweetResp["json"]()->Js.Promise.then_(handleJson, _)
+      Js.Promise.then_(handleJson, tweetResp["json"]())
     } else {
-      tweetResp["text"]()->Js.Promise.then_(
+      Js.Promise.then_(
         s => Js.Promise.resolve(Status.set("twitter GET error: " ++ s)),
-        _,
+        tweetResp["text"](),
       )
     }
   }
 
-  since(id_str)->Js.Promise.then_(handleFetch, _)
+  Js.Promise.then_(handleFetch, since(id_str))
 }
