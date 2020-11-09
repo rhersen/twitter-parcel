@@ -1,10 +1,9 @@
 @bs.val external document: 'a = "document"
+@bs.val external fetch: string => Js.Promise.t<'a> = "fetch"
 
 let faunaPut = %raw(`id_str => fetch("/.netlify/functions/fauna", { method: "PUT", body: id_str })`)
 
 let fetchAndShowTweets = (id_str, tweets) => {
-  let since = %raw(`s => fetch("/.netlify/functions/twitter?since_id=" + s)`)
-
   let handleJson = (tweetJson: array<Tweet.status>) => {
     let users = Users.getUsers(tweetJson)
 
@@ -46,7 +45,7 @@ let fetchAndShowTweets = (id_str, tweets) => {
     }
   }
 
-  Js.Promise.then_(handleFetch, since(id_str))
+  Js.Promise.then_(handleFetch, fetch("/.netlify/functions/twitter?since_id=" ++ id_str))
 }
 
 let mark = event => {

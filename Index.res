@@ -1,6 +1,5 @@
 @bs.val external document: 'a = "document"
-
-let faunaGet = %raw(`fetch("/.netlify/functions/fauna")`)
+@bs.val external fetch: string => Js.Promise.t<'a> = "fetch"
 
 Status.set("fauna GET")
 
@@ -19,4 +18,4 @@ Js.Promise.then_(faunaResp =>
       faunaResp["text"](),
     )
   }
-, faunaGet)
+, fetch("/.netlify/functions/fauna"))
