@@ -1,7 +1,10 @@
-@bs.val external document: 'a = "document"
-@bs.val external fetch: string => Js.Promise.t<'a> = "fetch"
+type fetchSettings = {
+  method: string,
+  body: string,
+}
 
-let faunaPut = %raw(`id_str => fetch("/.netlify/functions/fauna", { method: "PUT", body: id_str })`)
+@bs.val external document: 'a = "document"
+@bs.val external fetch: (string, option<fetchSettings>) => Js.Promise.t<'a> = "fetch"
 
 let fetchAndShowTweets = (id_str, tweets) => {
   let handleJson = (tweetJson: array<Tweet.status>) => {
@@ -45,7 +48,7 @@ let fetchAndShowTweets = (id_str, tweets) => {
     }
   }
 
-  Js.Promise.then_(handleFetch, fetch("/.netlify/functions/twitter?since_id=" ++ id_str))
+  Js.Promise.then_(handleFetch, fetch("/.netlify/functions/twitter?since_id=" ++ id_str, None))
 }
 
 let mark = event => {
@@ -64,7 +67,7 @@ let mark = event => {
             ),
           faunaResp["text"](),
         ),
-      faunaPut(id_str),
+      fetch("/.netlify/functions/fauna", Some({method: "PUT", body: id_str})),
     )
   }, fetchAndShowTweets(id_str, tweets))
 }
