@@ -1,6 +1,8 @@
 @bs.val external document: 'a = "document"
 @bs.val external fetch: string => Js.Promise.t<'a> = "fetch"
 
+type jsonResponse = {id_str: string}
+
 Status.set("fauna GET")
 
 Js.Promise.then_(faunaResp =>
@@ -9,7 +11,7 @@ Js.Promise.then_(faunaResp =>
       Status.set("twitter GET")
       Js.Promise.then_(
         () => Js.Promise.resolve(Js.log("done")),
-        Tweets.fetchAndShowTweets(json["id_str"], document["getElementById"]("tweets")),
+        Tweets.fetchAndShowTweets(json.id_str, document["getElementById"]("tweets")),
       )
     }, faunaResp["json"]())
   } else {
